@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using CloudinaryDotNet.Actions;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 namespace API.Models
@@ -38,6 +39,8 @@ namespace API.Models
         public Stock Stock { get; set; }
         public Tag Tag { get; set; }
         public ICollection<ProductImage> Images { get; set; }
+        public ICollection<CustomerProductPrice> SpecialPrices { get; set; }
+
     }
 
     public class Stock
@@ -80,6 +83,86 @@ namespace API.Models
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         public Product? Product { get; set; }
+    }
+
+    public class Customer
+    {
+        public int Id { get; set; }
+
+        [Column(TypeName = "nvarchar(100)")]
+        public string Name { get; set; }
+
+        [Column(TypeName = "nvarchar(100)")]
+        public string Title { get; set; }
+
+        [Column(TypeName = "nvarchar(20)")]
+        public string Phone { get; set; }
+
+        [Column(TypeName = "nvarchar(255)")]
+        public string Address { get; set; }
+
+        public decimal Balance { get; set; }
+
+        public ICollection<Order> Orders { get; set; }
+        public ICollection<CustomerProductPrice> SpecialPrices { get; set; }
+    }
+    public class Order
+    {
+        public int Id { get; set; }
+
+        public int CustomerId { get; set; }
+        public Customer Customer { get; set; }
+
+        public DateTime OrderDate { get; set; } = DateTime.UtcNow;
+
+        public ICollection<OrderItem> Items { get; set; }
+
+        public decimal TotalAmount { get; set; }
+    }
+    public class OrderItem
+    {
+        public int Id { get; set; }
+
+        public int OrderId { get; set; }
+        public Order Order { get; set; }
+
+        public int ProductId { get; set; }
+        public Product Product { get; set; }
+
+        public int Quantity { get; set; }
+
+        public decimal UnitPrice { get; set; } // O anki fiyat burada kayıt altına alınır
+
+        public decimal TotalPrice => Quantity * UnitPrice;
+    }
+    public class CustomerProductPrice
+    {
+        public int Id { get; set; }
+
+        public int CustomerId { get; set; }
+        public Customer Customer { get; set; }
+
+        public int ProductId { get; set; }
+        public Product Product { get; set; }
+
+        public decimal SpecialPrice { get; set; }
+
+        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+    }
+
+
+
+    class temp
+    {
+        private void ornekfiyatcek()
+        {
+            // Pseudo-code mantığı
+            //var specialPrice = db.CustomerProductPrices
+            //    .FirstOrDefault(x => x.CustomerId == customerId && x.ProductId == productId);
+
+            //decimal unitPrice = specialPrice?.SpecialPrice ?? product.Price;
+
+        }
     }
 
 }

@@ -5,60 +5,77 @@ namespace API.Context
 {
     public class AppDbContext : DbContext
     {
-        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
+        public AppDbContext(DbContextOptions<AppDbContext> options)
+            : base(options)
+        {
+        }
 
-        public DbSet<Product> Products => Set<Product>();
-        public DbSet<ProductImage> ProductImages => Set<ProductImage>();
-        public DbSet<Category> Categories => Set<Category>();
-       
-        public DbSet<Tag> Tags => Set<Tag>();
-        public DbSet<Stock> Stocks => Set<Stock>();
+        public DbSet<Category> Categories { get; set; }
+        public DbSet<Product> Products { get; set; }
+        public DbSet<Stock> Stocks { get; set; }
+        public DbSet<Tag> Tags { get; set; }
+        public DbSet<ProductImage> ProductImages { get; set; }
+        public DbSet<Customer> Customers { get; set; }
+        public DbSet<Order> Orders { get; set; }
+        public DbSet<OrderItem> OrderItems { get; set; }
+        public DbSet<CustomerProductPrice> CustomerProductPrices { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-            // Category - Product ilişkisi
+            // Product - Stock (1-1)
+            modelBuilder.Entity<Product>()
+                .HasOne(p => p.Stock)
+                .WithOne(s => s.Product)
+                .HasForeignKey<Stock>(s => s.ProductId);
+
+            // Product - Tag (1-1)
+            modelBuilder.Entity<Product>()
+                .HasOne(p => p.Tag)
+                .WithOne(t => t.Product)
+                .HasForeignKey<Tag>(t => t.ProductId);
+
+            // Product - ProductImage (1-N)
+            modelBuilder.Entity<Product>()
+                .HasMany(p => p.Images)
+                .WithOne(i => i.Product)
+                .HasForeignKey(i => i.ProductId);
+
+            // Category - Product (1-N)
             modelBuilder.Entity<Category>()
                 .HasMany(c => c.Products)
                 .WithOne(p => p.Category)
                 .HasForeignKey(p => p.CategoryId);
 
-            // Varsayılan değerler ve kolon tanımları
-            //modelBuilder.Entity<Category>()
-            //    .Property(c => c.Name)
-            //    .HasColumnType("char(50)");
+            // Customer - Order (1-N)
+            modelBuilder.Entity<Customer>()
+                .HasMany(c => c.Orders)
+                .WithOne(o => o.Customer)
+                .HasForeignKey(o => o.CustomerId);
 
-           
+            // Order - OrderItem (1-N)
+            modelBuilder.Entity<Order>()
+                .HasMany(o => o.Items)
+                .WithOne(i => i.Order)
+                .HasForeignKey(i => i.OrderId);
 
+            // Product - OrderItem (1-N)
             modelBuilder.Entity<Product>()
-                .Property(p => p.Publish)
-                .HasDefaultValue(0);
+                .HasMany(p => p.SpecialPrices)
+                .WithOne(cp => cp.Product)
+                .HasForeignKey(cp => cp.ProductId);
 
+            // Customer - CustomerProductPrice (1-N)
+            modelBuilder.Entity<Customer>()
+                .HasMany(c => c.SpecialPrices)
+                .WithOne(cp => cp.Customer)
+                .HasForeignKey(cp => cp.CustomerId);
+
+            //default values and column definitions
             modelBuilder.Entity<Stock>()
-                .Property(s => s.Quantity)
-                .HasDefaultValue(1);
-
-            
-
-            // İlişkiler
-            modelBuilder.Entity<Tag>()
-                .HasOne(t => t.Product)
-                .WithOne(p => p.Tag)
-                .HasForeignKey<Tag>(t => t.ProductId);
-
-            modelBuilder.Entity<Stock>()
-                .HasOne(s => s.Product)
-                .WithOne(p => p.Stock)
-                .HasForeignKey<Stock>(s => s.ProductId);
-
-            modelBuilder.Entity<ProductImage>()
-                .HasOne(i => i.Product)
-                .WithMany(p => p.Images)
-                .HasForeignKey(i => i.ProductId);
+               .Property(s => s.Quantity)
+               .HasDefaultValue(0);
         }
-
     }
-
-
 }

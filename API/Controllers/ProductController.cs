@@ -48,13 +48,25 @@ namespace YourNamespace.Controllers
 
         // POST: api/products
         [HttpPost]
-        public async Task<ActionResult<Product>> CreateProduct(Product product)
+        public async Task<ActionResult<Product>> CreateProduct(CreateProductDto dto)
         {
+            var product = new Product
+            {
+                Name = dto.Name,
+                Code = dto.Code,
+                Description = dto.Description,
+                Barcode = dto.Barcode,
+                CategoryId = dto.CategoryId,
+                Price = dto.Price,
+                Publish = dto.Publish
+            };
+
             _context.Products.Add(product);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction(nameof(GetProduct), new { id = product.Id }, product);
         }
+
 
         // PUT: api/products/5
         [HttpPut("{id}")]

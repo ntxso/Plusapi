@@ -1,10 +1,15 @@
 using API.Context;
 using API.Models;
+using API.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Add services to the container
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
@@ -12,16 +17,12 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
     });
 
+builder.Services.AddScoped<TokenService>();
 
-// Add services to the container.
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddSingleton<CloudinaryService>();
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-
-
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policy =>
@@ -30,16 +31,38 @@ builder.Services.AddCors(options =>
     });
 });
 
-
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+//  Authentication & Authorization
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        var config = builder.Configuration;
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = config["Jwt:Issuer"],
+            ValidAudience = config["Jwt:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["Jwt:Key"]))
+        };
+    });
+
+builder.Services.AddAuthorization();
+
+//  Build uygulama
 var app = builder.Build();
 
+//  Veritabaný migration ve baþlangýç verisi
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    db.Database.Migrate(); // En son migration varsa uygular, yoksa atlar
+    //db.Database.Migrate();
+
+    // Ýlk çalýþtýrmada test verisi oluþturmak istersen aktif et:
+    /*
     if (!db.Categories.Any())
     {
         db.Categories.AddRange(new List<Category>
@@ -52,25 +75,39 @@ using (var scope = app.Services.CreateScope())
         await db.SaveChangesAsync();
     }
 
+    var userService = new UserService(db);
+    
+    // Admin ekle
+    await userService.CreateUserAsync("admin", "138181", "Admin");
+
+    // Bayi ve bayi kullanýcýsý ekle
+    var bayi = new Customer
+    {
+        Name = "Antalya Test",
+        Title = "Test Aksesuar - Ali Tester",
+        Address = "Muratpaþa mh 1111 sk Antalya",
+        Phone = "123 456 45 45",
+        Balance = 0
+    };
+    db.Customers.Add(bayi);
+    await db.SaveChangesAsync();
+
+    await userService.CreateUserAsync("bayi1", "1234", "Dealer", bayi.Id);
+    */
 }
 
-// Configure the HTTP request pipeline.
+//  Middleware pipeline
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-
-
-
-
-
 app.UseCors("AllowAll");
-
 app.UseHttpsRedirection();
 
-app.UseAuthorization();
+app.UseAuthentication();  // Önce kimlik doðrulama
+app.UseAuthorization();   // Sonra yetkilendirme
 
 app.MapControllers();
 

@@ -45,6 +45,22 @@ namespace YourNamespace.Controllers
 
             return product;
         }
+        // GET /api/products/search?code=abc&name=xyz&categoryId=3
+        [HttpGet("search")]
+        public async Task<IActionResult> SearchProducts([FromQuery] string? code, [FromQuery] string? name, [FromQuery] int? categoryId)
+        {
+            var query = _context.Products.Include(p => p.Category).AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(code))
+                query = query.Where(p => p.Code.Contains(code));
+            if (!string.IsNullOrWhiteSpace(name))
+                query = query.Where(p => p.Name.Contains(name));
+            if (categoryId.HasValue)
+                query = query.Where(p => p.CategoryId == categoryId.Value);
+
+            var results = await query.ToListAsync();
+            return Ok(results);
+        }
 
         // POST: api/products
         [HttpPost]

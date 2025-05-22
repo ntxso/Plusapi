@@ -271,6 +271,39 @@ namespace API.Migrations
                     b.ToTable("Tags");
                 });
 
+            modelBuilder.Entity("API.Models.User", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("CustomerId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CustomerId");
+
+                    b.ToTable("Users");
+                });
+
             modelBuilder.Entity("API.Models.CustomerProductPrice", b =>
                 {
                     b.HasOne("API.Models.Customer", "Customer")
@@ -362,6 +395,16 @@ namespace API.Migrations
                     b.Navigation("Product");
                 });
 
+            modelBuilder.Entity("API.Models.User", b =>
+                {
+                    b.HasOne("API.Models.Customer", "Customer")
+                        .WithMany("Users")
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Customer");
+                });
+
             modelBuilder.Entity("API.Models.Category", b =>
                 {
                     b.Navigation("Products");
@@ -372,6 +415,8 @@ namespace API.Migrations
                     b.Navigation("Orders");
 
                     b.Navigation("SpecialPrices");
+
+                    b.Navigation("Users");
                 });
 
             modelBuilder.Entity("API.Models.Order", b =>

@@ -103,6 +103,9 @@ namespace API.Models
 
         public decimal Balance { get; set; }
 
+        // Yeni: Bayiye bağlı kullanıcılar
+        public ICollection<User> Users { get; set; }
+
         public ICollection<Order>? Orders { get; set; }
         public ICollection<CustomerProductPrice>? SpecialPrices { get; set; }
     }

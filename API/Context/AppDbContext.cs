@@ -20,6 +20,8 @@ namespace API.Context
         public DbSet<OrderItem> OrderItems { get; set; }
         public DbSet<CustomerProductPrice> CustomerProductPrices { get; set; }
 
+        public DbSet<User> Users { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -53,6 +55,12 @@ namespace API.Context
                 .HasMany(c => c.Orders)
                 .WithOne(o => o.Customer)
                 .HasForeignKey(o => o.CustomerId);
+
+            modelBuilder.Entity<User>()
+            .HasOne(u => u.Customer)
+            .WithMany(c => c.Users)
+            .HasForeignKey(u => u.CustomerId)
+            .OnDelete(DeleteBehavior.Restrict); // Adminler müşteriyle bağlı değilse silinmesin
 
             // Order - OrderItem (1-N)
             modelBuilder.Entity<Order>()

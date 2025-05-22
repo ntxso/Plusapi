@@ -87,6 +87,29 @@ namespace API.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Users",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Username = table.Column<string>(type: "nvarchar(50)", nullable: false),
+                    PasswordHash = table.Column<string>(type: "nvarchar(256)", nullable: false),
+                    Role = table.Column<string>(type: "nvarchar(20)", nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    CustomerId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Users", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Users_Customers_CustomerId",
+                        column: x => x.CustomerId,
+                        principalTable: "Customers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "CustomerProductPrices",
                 columns: table => new
                 {
@@ -252,6 +275,11 @@ namespace API.Migrations
                 table: "Tags",
                 column: "ProductId",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_CustomerId",
+                table: "Users",
+                column: "CustomerId");
         }
 
         /// <inheritdoc />
@@ -271,6 +299,9 @@ namespace API.Migrations
 
             migrationBuilder.DropTable(
                 name: "Tags");
+
+            migrationBuilder.DropTable(
+                name: "Users");
 
             migrationBuilder.DropTable(
                 name: "Orders");

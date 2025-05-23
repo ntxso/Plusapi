@@ -1,4 +1,6 @@
-﻿namespace API.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace API.Models
 {
     public class CreateProductDto
     {
@@ -11,7 +13,16 @@
         public int? Publish { get; set; }
     }
 
-
+    public class CreateCustomerDto
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string Title { get; set; }
+        public string Phone { get; set; }
+        public string Address { get; set; }
+        public decimal Balance { get; set; }
+        public string Notes { get; set; }
+    }
     public class LoginRequest
     {
         public string Username { get; set; }

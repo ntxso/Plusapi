@@ -83,6 +83,31 @@ namespace YourNamespace.Controllers
             return CreatedAtAction(nameof(GetProduct), new { id = product.Id }, product);
         }
 
+        // POST: api/products/bulk
+        [HttpPost("bulk")]
+        public async Task<ActionResult> CreateProducts([FromBody] List<CreateProductDto> products)
+        {
+            if (products == null || products.Count == 0)
+                return BadRequest("Ürün listesi boş olamaz.");
+
+            var productEntities = products.Select(dto => new Product
+            {
+                Name = dto.Name,
+                Code = dto.Code,
+                Description = dto.Description,
+                Barcode = dto.Barcode,
+                CategoryId = dto.CategoryId,
+                Price = dto.Price,
+                Publish = dto.Publish
+            }).ToList();
+
+            _context.Products.AddRange(productEntities);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = $"{productEntities.Count} ürün başarıyla eklendi." });
+        }
+
+
 
         // PUT: api/products/5
         [HttpPut("{id}")]

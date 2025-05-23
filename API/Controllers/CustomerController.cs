@@ -45,8 +45,17 @@ namespace API.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Customer>> CreateCustomer(Customer customer)
+        public async Task<ActionResult<Customer>> CreateCustomer(CreateCustomerDto dto)
         {
+            var customer = new Customer
+            {
+                Name = dto.Name,
+                Title = dto.Title,
+                Phone = dto.Phone,
+                Address = dto.Address,
+                Balance = dto.Balance,
+                Notes = dto.Notes
+            };
             _context.Customers.Add(customer);
             await _context.SaveChangesAsync();
             return CreatedAtAction(nameof(GetCustomer), new { id = customer.Id }, customer);

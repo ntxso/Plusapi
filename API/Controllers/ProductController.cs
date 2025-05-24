@@ -49,7 +49,7 @@ namespace YourNamespace.Controllers
         [HttpGet("search")]
         public async Task<IActionResult> SearchProducts([FromQuery] string? code, [FromQuery] string? name, [FromQuery] int? categoryId)
         {
-            var query = _context.Products.Include(p => p.Category).AsQueryable();
+            var query = _context.Products.Include(p => p.Category).Include(p =>p.Images).AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(code))
                 query = query.Where(p => p.Code.Contains(code));

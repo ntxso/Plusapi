@@ -34,7 +34,8 @@ namespace API.Migrations
                     Title = table.Column<string>(type: "nvarchar(100)", nullable: false),
                     Phone = table.Column<string>(type: "nvarchar(20)", nullable: false),
                     Address = table.Column<string>(type: "nvarchar(255)", nullable: false),
-                    Balance = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
+                    Balance = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Notes = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -53,6 +54,7 @@ namespace API.Migrations
                     Barcode = table.Column<string>(type: "nvarchar(20)", nullable: true),
                     CategoryId = table.Column<int>(type: "int", nullable: true),
                     Price = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
+                    BuyingPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
                     Publish = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>

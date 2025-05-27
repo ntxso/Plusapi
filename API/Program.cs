@@ -62,23 +62,36 @@ using (var scope = app.Services.CreateScope())
     //db.Database.Migrate();
 
     // Ýlk çalýþtýrmada test verisi oluþturmak istersen aktif et:
-    /*
+    
     if (!db.Categories.Any())
     {
         db.Categories.AddRange(new List<Category>
         {
-            new Category { Name = "char_value_1" },
-            new Category { Name = "char_value_2" },
-            new Category { Name = "char_value_3" }
+            new Category { Name = "Telefon Kýlýfý" },
+            new Category { Name = "Ekran Koruyucu" },
+            new Category { Name = "Þarj Cihazý" },
+            new Category { Name = "Kablo" },
+            new Category { Name = "Kulaklýk" },
+            new Category { Name = "Hoparlör" },
+            new Category { Name = "Telefon Tutucu" },
+            new Category { Name = "Powerbank" },
+            new Category { Name = "Batarya" },
+            new Category { Name = "Airpods Aksesuar" },
+            new Category { Name = "Tablet Aksesuar" },
+            new Category { Name = "Saat Aksesuar" },
+            new Category { Name = "Bilgisayar Ürünleri" },
+            new Category { Name = "Bellek" },
+            new Category { Name = "Kablo Koruyucu" },
+            new Category { Name = "Diðer" }
         });
 
         await db.SaveChangesAsync();
     }
 
-    var userService = new UserService(db);
+    /*var userService = new UserService(db);
     
     // Admin ekle
-    await userService.CreateUserAsync("admin", "138181", "Admin");
+    await userService.CreateUserAsync("admin", "138181", "admin");
 
     // Bayi ve bayi kullanýcýsý ekle
     var bayi = new Customer
@@ -92,8 +105,8 @@ using (var scope = app.Services.CreateScope())
     db.Customers.Add(bayi);
     await db.SaveChangesAsync();
 
-    await userService.CreateUserAsync("bayi1", "1234", "Dealer", bayi.Id);
-    */
+    await userService.CreateUserAsync("bayi1", "1234", "dealer", bayi.Id);*/
+    
 }
 
 //  Middleware pipeline

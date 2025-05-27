@@ -35,7 +35,9 @@ namespace API.Migrations
                     Phone = table.Column<string>(type: "nvarchar(20)", nullable: false),
                     Address = table.Column<string>(type: "nvarchar(255)", nullable: false),
                     Balance = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    Notes = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Notes = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    TaxOffice = table.Column<string>(type: "nvarchar(50)", nullable: true),
+                    TaxValue = table.Column<string>(type: "nvarchar(20)", nullable: true)
                 },
                 constraints: table =>
                 {

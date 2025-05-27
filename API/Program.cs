@@ -18,6 +18,7 @@ builder.Services.AddControllers()
     });
 
 builder.Services.AddScoped<TokenService>();
+builder.Services.AddScoped<UserService>();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -59,7 +60,7 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    //db.Database.Migrate();
+    db.Database.Migrate();
 
     // Ýlk çalýþtýrmada test verisi oluþturmak istersen aktif et:
     
@@ -88,25 +89,29 @@ using (var scope = app.Services.CreateScope())
         await db.SaveChangesAsync();
     }
 
-    /*var userService = new UserService(db);
-    
-    // Admin ekle
-    await userService.CreateUserAsync("admin", "138181", "admin");
-
-    // Bayi ve bayi kullanýcýsý ekle
-    var bayi = new Customer
+    if (!db.Users.Any())
     {
-        Name = "Antalya Test",
-        Title = "Test Aksesuar - Ali Tester",
-        Address = "Muratpaþa mh 1111 sk Antalya",
-        Phone = "123 456 45 45",
-        Balance = 0
-    };
-    db.Customers.Add(bayi);
-    await db.SaveChangesAsync();
+        var userService = new UserService(db);
 
-    await userService.CreateUserAsync("bayi1", "1234", "dealer", bayi.Id);*/
+        // Admin ekle
+        await userService.CreateUserAsync("admin", "138181", "admin");
+
+        // Bayi ve bayi kullanýcýsý ekle
+        var bayi = new Customer
+        {
+            Name = "Antalya Test",
+            Title = "Test Aksesuar - Ali Tester",
+            Address = "Muratpaþa mh 1111 sk Antalya",
+            Phone = "123 456 45 45",
+            Balance = 0
+        };
+        db.Customers.Add(bayi);
+        await db.SaveChangesAsync();
+
+        await userService.CreateUserAsync("bayi1", "1234", "dealer", bayi.Id);
+    }
     
+
 }
 
 //  Middleware pipeline

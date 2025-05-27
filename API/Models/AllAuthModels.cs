@@ -25,4 +25,21 @@ namespace API.Models
     }
 
 
+    public class DealerRegisterDto
+    {
+        // Customer (Bayi)
+        public string Name { get; set; }
+        public string Title { get; set; }
+        public string Phone { get; set; }
+        public string Address { get; set; }
+        public string? TaxOffice { get; set; }
+        public string? TaxValue { get; set; }
+        public string? Notes { get; set; }
+
+        // User (Kullanıcı)
+        public string Username { get; set; }
+        public string Password { get; set; } // plain password
+    }
+
+
 }

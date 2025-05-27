@@ -1,7 +1,9 @@
 ﻿using API.Context;
 using API.Models;
+using API.Security;
 using API.Services;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
@@ -15,11 +17,13 @@ public class AuthController : ControllerBase
 {
     private readonly AppDbContext _context;
     private readonly TokenService _tokenService;
+    private readonly UserService _userService;
 
-    public AuthController(AppDbContext context, TokenService tokenService)
+    public AuthController(AppDbContext context, TokenService tokenService, UserService userService)
     {
         _context = context;
         _tokenService = tokenService;
+        _userService = userService;
     }
 
     [HttpPost("login")]
@@ -55,5 +59,45 @@ public class AuthController : ControllerBase
     {
         return Ok("Bu alan sadece admin içindir.");
     }
+
+    [HttpPost("register")]
+    public async Task<IActionResult> RegisterDealer([FromBody] DealerRegisterDto dto)
+    {
+        // Aynı kullanıcı adı var mı?
+        if (await _context.Users.AnyAsync(u => u.Username == dto.Username))
+            return BadRequest("Bu kullanıcı adı zaten mevcut.");
+
+        var customer = new Customer
+        {
+            Name = dto.Name,
+            Title = dto.Title,
+            Phone = dto.Phone,
+            Address = dto.Address,
+            TaxOffice = dto.TaxOffice,
+            TaxValue = dto.TaxValue,
+            Notes = dto.Notes,
+            Balance = 0,
+            Users = new List<User>()
+        };
+
+        _context.Customers.Add(customer); // User da Customer üzerinden eklenecek
+        await _context.SaveChangesAsync();
+
+        var user = await _userService.CreateUserAsync(
+           username: dto.Username,
+           password: dto.Password,
+           role: "bayi", // veya "Dealer"
+           customerId: customer.Id
+       );
+
+
+        return Ok(new
+        {
+            message = "Bayi ve kullanıcı başarıyla kaydedildi.",
+            customerId = customer.Id,
+            userId = user.Id
+        });
+    }
+
 
 }

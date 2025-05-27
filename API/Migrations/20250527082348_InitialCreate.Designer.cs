@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace API.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250526135458_InitialCreate")]
+    [Migration("20250527082348_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -66,6 +66,12 @@ namespace API.Migrations
 
                     b.Property<string>("Phone")
                         .IsRequired()
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("TaxOffice")
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("TaxValue")
                         .HasColumnType("nvarchar(20)");
 
                     b.Property<string>("Title")

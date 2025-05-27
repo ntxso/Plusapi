@@ -65,6 +65,12 @@ namespace API.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(20)");
 
+                    b.Property<string>("TaxOffice")
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("TaxValue")
+                        .HasColumnType("nvarchar(20)");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("nvarchar(100)");

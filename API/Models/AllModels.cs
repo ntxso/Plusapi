@@ -106,12 +106,19 @@ namespace API.Models
 
         public string? Notes { get; set; }
 
+        [Column(TypeName = "nvarchar(50)")]
+        public string? TaxOffice { get; set; }
+
+        [Column(TypeName = "nvarchar(20)")]
+        public string? TaxValue { get; set; }
+
         // Yeni: Bayiye bağlı kullanıcılar
         public ICollection<User>? Users { get; set; }
 
         public ICollection<Order>? Orders { get; set; }
         public ICollection<CustomerProductPrice>? SpecialPrices { get; set; }
     }
+
     public class Order
     {
         public int Id { get; set; }

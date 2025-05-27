@@ -32,6 +32,7 @@ namespace API.Models
         public string? Barcode { get; set; }
         public int? CategoryId { get; set; }
         public decimal? Price { get; set; }
+        public decimal? BuyingPrice { get; set; }
 
         public int? Publish { get; set; }
         public Category? Category { get; set; }

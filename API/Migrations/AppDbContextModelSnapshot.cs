@@ -58,6 +58,9 @@ namespace API.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<string>("Notes")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Phone")
                         .IsRequired()
                         .HasColumnType("nvarchar(20)");
@@ -163,6 +166,9 @@ namespace API.Migrations
 
                     b.Property<string>("Barcode")
                         .HasColumnType("nvarchar(20)");
+
+                    b.Property<decimal?>("BuyingPrice")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int?>("CategoryId")
                         .HasColumnType("int");

@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace API.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250522095500_InitialCreate")]
+    [Migration("20250526135458_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -60,6 +60,9 @@ namespace API.Migrations
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Phone")
                         .IsRequired()
@@ -166,6 +169,9 @@ namespace API.Migrations
 
                     b.Property<string>("Barcode")
                         .HasColumnType("nvarchar(20)");
+
+                    b.Property<decimal?>("BuyingPrice")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int?>("CategoryId")
                         .HasColumnType("int");

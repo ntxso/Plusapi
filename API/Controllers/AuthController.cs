@@ -86,7 +86,7 @@ public class AuthController : ControllerBase
         var user = await _userService.CreateUserAsync(
            username: dto.Username,
            password: dto.Password,
-           role: "bayi", // veya "Dealer"
+           role: "dealer", // veya "Dealer"
            customerId: customer.Id
        );
 

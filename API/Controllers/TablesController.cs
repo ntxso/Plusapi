@@ -50,7 +50,15 @@ public class TablesController : ControllerBase
             case "categories":
                 var categories = await _context.Categories.FromSqlRaw(query).ToListAsync();
                 return Ok(categories);
-            // Diğer tablolar için case'ler ekleyin
+            case "users":
+                var users = await _context.Users.FromSqlRaw(query).ToListAsync();
+                return Ok(users);
+            case "productimages":
+                var productImages = await _context.ProductImages.FromSqlRaw(query).ToListAsync();
+                return Ok(productImages);
+            case "customers":
+                var customers = await _context.Customers.FromSqlRaw(query).ToListAsync();
+                return Ok(customers);
             default:
                 return NotFound("Table not found");
         }

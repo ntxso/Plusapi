@@ -81,6 +81,8 @@ namespace API.Models
 
         public int? FileSizeKb { get; set; }
 
+        public string PublicId { get; set; } // Yeni eklendi
+
         public DateTime? CreatedAt { get; set; } = DateTime.UtcNow;
 
         public Product? Product { get; set; }

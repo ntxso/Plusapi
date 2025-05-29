@@ -26,14 +26,15 @@ namespace API.Controllers
 
             try
             {
-                var (url, width, height) = await _cloudinaryService.UploadImageAsync(file);
+                var (url, width, height, publicId) = await _cloudinaryService.UploadImageAsync(file);
                 var image = new ProductImage
                 {
                     ProductId = productId,
                     ImageUrl = url,
                     Width = width,
                     Height = height,
-                    FileSizeKb = (int)(file.Length / 1024)
+                    FileSizeKb = (int)(file.Length / 1024),
+                    PublicId = publicId
                 };
 
                 _context.ProductImages.Add(image);
@@ -51,6 +52,34 @@ namespace API.Controllers
 
             
         }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteImage(int id)
+        {
+            var image = await _context.ProductImages.FindAsync(id);
+            if (image == null)
+                return NotFound("Resim bulunamadı.");
+
+            try
+            {
+                // Cloudinary'den sil
+                if (!string.IsNullOrEmpty(image.PublicId))
+                {
+                    await _cloudinaryService.DeleteImageAsync(image.PublicId);
+                }
+
+                // Veritabanından sil
+                _context.ProductImages.Remove(image);
+                await _context.SaveChangesAsync();
+
+                return Ok("Resim başarıyla silindi.");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Silme hatası: {ex.Message}");
+            }
+        }
+
     }
 
 }

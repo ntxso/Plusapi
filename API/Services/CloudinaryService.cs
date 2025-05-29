@@ -16,13 +16,12 @@ public class CloudinaryService
         _cloudinary = new Cloudinary(account);
     }
 
-    public async Task<(string url, int width, int height)> UploadImageAsync(IFormFile file)
+    public async Task<(string url, int width, int height, string publicId)> UploadImageAsync(IFormFile file)
     {
         using var stream = file.OpenReadStream();
         var uploadParams = new ImageUploadParams
         {
             File = new FileDescription(file.FileName, stream),
-            //Folder = "plus", // Opsiyonel
             UseFilename = true,
             UniqueFilename = true,
             Overwrite = false,
@@ -36,6 +35,16 @@ public class CloudinaryService
         if (result.StatusCode != System.Net.HttpStatusCode.OK)
             throw new Exception("Cloudinary yükleme başarısız.");
 
-        return (result.SecureUrl.ToString(), result.Width, result.Height);
+        return (result.SecureUrl.ToString(), result.Width, result.Height, result.PublicId);
+    }
+
+
+    public async Task DeleteImageAsync(string publicId)
+    {
+        var deletionParams = new DeletionParams(publicId);
+        var result = await _cloudinary.DestroyAsync(deletionParams);
+
+        if (result.Result != "ok")
+            throw new Exception($"Silme başarısız: {result.Result}");
     }
 }

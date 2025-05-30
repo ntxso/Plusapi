@@ -9,13 +9,13 @@ namespace API.Models
         public int Id { get; set; }
 
         [Column(TypeName = "nvarchar(50)")]
-        public string Username { get; set; }
+        public string Email { get; set; }
 
         [Column(TypeName = "nvarchar(256)")]
         public string PasswordHash { get; set; }
 
         [Column(TypeName = "nvarchar(20)")]
-        public string Role { get; set; } // Admin, Bayi, Editor
+        public string Role { get; set; } // Admin, Dealer, Editor
 
         public bool IsActive { get; set; } = true;
 

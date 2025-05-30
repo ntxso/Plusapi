@@ -96,7 +96,7 @@ namespace API.Models
         public string Name { get; set; }
 
         [Column(TypeName = "nvarchar(100)")]
-        public string Title { get; set; }
+        public string CompanyName { get; set; }
 
         [Column(TypeName = "nvarchar(20)")]
         public string Phone { get; set; }
@@ -107,12 +107,6 @@ namespace API.Models
         public decimal Balance { get; set; }
 
         public string? Notes { get; set; }
-
-        [Column(TypeName = "nvarchar(50)")]
-        public string? TaxOffice { get; set; }
-
-        [Column(TypeName = "nvarchar(20)")]
-        public string? TaxValue { get; set; }
 
         // Yeni: Bayiye bağlı kullanıcılar
         public ICollection<User>? Users { get; set; }

@@ -61,7 +61,7 @@ namespace API.Controllers
             return CreatedAtAction(nameof(GetCustomer), new { id = customer.Id }, customer);
         }
 
-        [HttpPut("{id}")]
+        [HttpPost("Update/{id}")]
         public async Task<IActionResult> UpdateCustomer(int id, Customer customer)
         {
             if (id != customer.Id) return BadRequest();
@@ -70,7 +70,7 @@ namespace API.Controllers
             return NoContent();
         }
 
-        [HttpDelete("{id}")]
+        [HttpPost("Delete/{id}")]
         public async Task<IActionResult> DeleteCustomer(int id)
         {
             var customer = await _context.Customers.FindAsync(id);

@@ -53,7 +53,7 @@ namespace API.Controllers
             
         }
 
-        [HttpDelete("{id}")]
+        [HttpPost("Delete/{id}")]
         public async Task<IActionResult> DeleteImage(int id)
         {
             var image = await _context.ProductImages.FindAsync(id);

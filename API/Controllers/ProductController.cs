@@ -110,8 +110,8 @@ namespace YourNamespace.Controllers
 
 
         // PUT: api/products/5
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateProduct(int id, Product product)
+        [HttpPost("Update/{id}")]
+        public async Task<IActionResult> UpdateProduct(int id, [FromBody] Product product)
         {
             if (id != product.Id)
                 return BadRequest();
@@ -134,7 +134,7 @@ namespace YourNamespace.Controllers
         }
 
         // DELETE: api/products/5
-        [HttpDelete("{id}")]
+        [HttpPost("Delete/{id}")]
         public async Task<IActionResult> DeleteProduct(int id)
         {
             var product = await _context.Products
@@ -146,9 +146,9 @@ namespace YourNamespace.Controllers
             if (product == null)
                 return NotFound();
 
-            _context.Stocks.Remove(product.Stock);
-            _context.Tags.Remove(product.Tag);
-            _context.ProductImages.RemoveRange(product.Images);
+            if (product.Stock != null) _context.Stocks.Remove(product.Stock);
+            if (product.Tag != null) _context.Tags.Remove(product.Tag);
+            _context.ProductImages.RemoveRange(product.Images?.Any() == true ? product.Images : Enumerable.Empty<ProductImage>());
             _context.Products.Remove(product);
 
             await _context.SaveChangesAsync();

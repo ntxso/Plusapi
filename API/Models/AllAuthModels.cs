@@ -4,6 +4,18 @@ using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace API.Models
 {
+    public class EmailVerification
+    {
+        [Key]
+        public int Id { get; set; }
+        [Column(TypeName = "nvarchar(50)")]
+        public string Email { get; set; }
+        [Column(TypeName = "nvarchar(6)")]
+        public string Code { get; set; } // 6 haneli doğrulama kodu
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public bool IsUsed { get; set; }
+        
+    }
     public class User
     {
         public int Id { get; set; }
@@ -19,6 +31,10 @@ namespace API.Models
 
         public bool IsActive { get; set; } = true;
 
+        public bool? EmailConfirmed { get; set; } = false;
+        public string? EmailConfirmationToken { get; set; }
+
+
         // Foreign Key: Bağlı olduğu bayi (Customer)
         public int? CustomerId { get; set; } // Admin bağımsız olabilir
         public Customer? Customer { get; set; }
@@ -29,15 +45,16 @@ namespace API.Models
     {
         // Customer (Bayi)
         public string Name { get; set; }
-        public string Title { get; set; }
+        public string CompanyName { get; set; }
         public string Phone { get; set; }
+        public int CityId { get; set; }
+        public int DistrictId { get; set; }
         public string Address { get; set; }
-        public string? TaxOffice { get; set; }
-        public string? TaxValue { get; set; }
-        public string? Notes { get; set; }
+        public SalesType SalesType { get; set; }
+        public string? VerificationCode { get; set; }
 
         // User (Kullanıcı)
-        public string Username { get; set; }
+        public string Email { get; set; }
         public string Password { get; set; } // plain password
     }
 

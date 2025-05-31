@@ -31,7 +31,7 @@ public class AuthController : ControllerBase
     {
         var user = await _context.Users
             .Include(u => u.Customer)
-            .FirstOrDefaultAsync(u => u.Username == request.Username);
+            .FirstOrDefaultAsync(u => u.Email == request.Email);
 
         if (user == null || !VerifyPassword(request.Password, user.PasswordHash))
             return Unauthorized("Kullanıcı adı veya şifre hatalı.");
@@ -42,7 +42,7 @@ public class AuthController : ControllerBase
         {
             Token = token,
             Role = user.Role,
-            Username = user.Username
+            Email = user.Email
         });
     }
 
@@ -64,19 +64,18 @@ public class AuthController : ControllerBase
     public async Task<IActionResult> RegisterDealer([FromBody] DealerRegisterDto dto)
     {
         // Aynı kullanıcı adı var mı?
-        if (await _context.Users.AnyAsync(u => u.Username == dto.Username))
+        if (await _context.Users.AnyAsync(u => u.Email == dto.Email))
             return BadRequest("Bu kullanıcı adı zaten mevcut.");
 
         var customer = new Customer
         {
             Name = dto.Name,
-            Title = dto.Title,
+            CompanyName = dto.CompanyName,
             Phone = dto.Phone,
             Address = dto.Address,
-            TaxOffice = dto.TaxOffice,
-            TaxValue = dto.TaxValue,
-            Notes = dto.Notes,
-            Balance = 0,
+            CityId = dto.CityId,
+            DistrictId = dto.DistrictId,
+           SalesType = dto.SalesType,
             Users = new List<User>()
         };
 
@@ -84,7 +83,7 @@ public class AuthController : ControllerBase
         await _context.SaveChangesAsync();
 
         var user = await _userService.CreateUserAsync(
-           username: dto.Username,
+           email: dto.Email,
            password: dto.Password,
            role: "dealer", // veya "Dealer"
            customerId: customer.Id

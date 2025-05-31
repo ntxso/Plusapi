@@ -4,6 +4,7 @@ using API.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using StackExchange.Redis;
 using System.Text;
 using System.Text.Json.Serialization;
 
@@ -19,6 +20,7 @@ builder.Services.AddControllers()
 
 builder.Services.AddScoped<TokenService>();
 builder.Services.AddScoped<UserService>();
+
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -68,7 +70,8 @@ using (var scope = app.Services.CreateScope())
     {
         db.Categories.AddRange(new List<Category>
         {
-            new Category { Name = "Telefon Kýlýfý" },
+            new Category { Name = "Plus Aksesuar Kýlýf" },
+            new Category { Name = "Outlet Kýlýf" },
             new Category { Name = "Ekran Koruyucu" },
             new Category { Name = "Þarj Cihazý" },
             new Category { Name = "Kablo" },
@@ -83,7 +86,7 @@ using (var scope = app.Services.CreateScope())
             new Category { Name = "Bilgisayar Ürünleri" },
             new Category { Name = "Bellek" },
             new Category { Name = "Kablo Koruyucu" },
-            new Category { Name = "Diðer" }
+            new Category { Name = "Diðer" },
         });
 
         await db.SaveChangesAsync();
@@ -100,7 +103,7 @@ using (var scope = app.Services.CreateScope())
         var bayi = new Customer
         {
             Name = "Antalya Test",
-            Title = "Test Aksesuar - Ali Tester",
+            CompanyName = "Test Aksesuar - Ali Tester",
             Address = "Muratpaþa mh 1111 sk Antalya",
             Phone = "123 456 45 45",
             Balance = 0

@@ -31,13 +31,14 @@ namespace API.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(100)", nullable: false),
-                    Title = table.Column<string>(type: "nvarchar(100)", nullable: false),
+                    CompanyName = table.Column<string>(type: "nvarchar(100)", nullable: false),
                     Phone = table.Column<string>(type: "nvarchar(20)", nullable: false),
                     Address = table.Column<string>(type: "nvarchar(255)", nullable: false),
                     Balance = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Notes = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    TaxOffice = table.Column<string>(type: "nvarchar(50)", nullable: true),
-                    TaxValue = table.Column<string>(type: "nvarchar(20)", nullable: true)
+                    SalesType = table.Column<int>(type: "int", nullable: false),
+                    CityId = table.Column<int>(type: "int", nullable: false),
+                    DistrictId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -96,10 +97,12 @@ namespace API.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Username = table.Column<string>(type: "nvarchar(50)", nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(50)", nullable: false),
                     PasswordHash = table.Column<string>(type: "nvarchar(256)", nullable: false),
                     Role = table.Column<string>(type: "nvarchar(20)", nullable: false),
                     IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    EmailConfirmed = table.Column<bool>(type: "bit", nullable: true),
+                    EmailConfirmationToken = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CustomerId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>

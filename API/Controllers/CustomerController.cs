@@ -25,13 +25,13 @@ namespace API.Controllers
         }
 
         [HttpGet("search")]
-        public async Task<ActionResult<IEnumerable<Customer>>> Search([FromQuery] string? name, [FromQuery] string? title)
+        public async Task<ActionResult<IEnumerable<Customer>>> Search([FromQuery] string? name, [FromQuery] string? companyName)
         {
             var query = _context.Customers.AsQueryable();
             if (!string.IsNullOrEmpty(name))
                 query = query.Where(c => c.Name.Contains(name));
-            if (!string.IsNullOrEmpty(title))
-                query = query.Where(c => c.Title.Contains(title));
+            if (!string.IsNullOrEmpty(companyName))
+                query = query.Where(c => c.CompanyName.Contains(companyName));
 
             return await query.ToListAsync();
         }
@@ -50,11 +50,12 @@ namespace API.Controllers
             var customer = new Customer
             {
                 Name = dto.Name,
-                Title = dto.Title,
+                CompanyName = dto.CompanyName,
                 Phone = dto.Phone,
+                CityId = dto.CityId,
+                DistrictId = dto.DistrictId,
                 Address = dto.Address,
-                Balance = dto.Balance,
-                Notes = dto.Notes
+                SalesType = dto.SalesType,
             };
             _context.Customers.Add(customer);
             await _context.SaveChangesAsync();

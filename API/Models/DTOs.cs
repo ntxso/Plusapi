@@ -17,15 +17,18 @@ namespace API.Models
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public string Title { get; set; }
+        public string CompanyName { get; set; }
         public string Phone { get; set; }
+        public int CityId { get; set; }
+        public int DistrictId { get; set; }
         public string Address { get; set; }
-        public decimal Balance { get; set; }
-        public string Notes { get; set; }
+        public SalesType SalesType { get; set; }
+        public string Email { get; set; }
+        public string Password { get; set; }
     }
     public class LoginRequest
     {
-        public string Username { get; set; }
+        public string Email { get; set; }
         public string Password { get; set; }
     }
 
@@ -33,6 +36,6 @@ namespace API.Models
     {
         public string Token { get; set; }
         public string Role { get; set; }
-        public string Username { get; set; }
+        public string Email { get; set; }
     }
 }

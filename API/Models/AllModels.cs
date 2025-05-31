@@ -108,6 +108,9 @@ namespace API.Models
 
         public string? Notes { get; set; }
 
+        public SalesType SalesType { get; set; }
+        public int CityId { get; set; }
+        public int DistrictId { get; set; }
         // Yeni: Bayiye bağlı kullanıcılar
         public ICollection<User>? Users { get; set; }
 

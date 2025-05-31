@@ -14,15 +14,15 @@ namespace API.Services
             _context = context;
         }
 
-        public async Task<User> CreateUserAsync(string username, string password, string role, int? customerId = null)
+        public async Task<User> CreateUserAsync(string email, string password, string role, int? customerId = null)
         {
-            var existing = await _context.Users.FirstOrDefaultAsync(u => u.Username == username);
+            var existing = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
             if (existing != null)
                 throw new Exception("Bu kullanıcı adı zaten kullanılıyor");
 
             var user = new User
             {
-                Username = username,
+                Email = email,
                 PasswordHash = PasswordHasher.HashPassword(password),
                 Role = role,
                 CustomerId = customerId

@@ -75,6 +75,7 @@ public class VerificationController : ControllerBase
             var errorBody = await response.Body.ReadAsStringAsync();
             return StatusCode((int)response.StatusCode, $"E-posta gönderilemedi: {response.StatusCode} - {errorBody}");
         }
+        //return Ok(new { Message = "Doğrulama kodu gönderildi.", ExpiresAt = DateTime.Now.AddMinutes(10) });
     }
 
     [HttpPost("verify-code")]

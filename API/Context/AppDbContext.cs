@@ -58,10 +58,10 @@ namespace API.Context
                 .HasForeignKey(o => o.CustomerId);
 
             modelBuilder.Entity<User>()
-            .HasOne(u => u.Customer)
-            .WithMany(c => c.Users)
-            .HasForeignKey(u => u.CustomerId)
-            .OnDelete(DeleteBehavior.Restrict); // Adminler müşteriyle bağlı değilse silinmesin
+                .HasOne(u => u.Customer)
+                .WithMany(c => c.Users)
+                .HasForeignKey(u => u.CustomerId)
+                .OnDelete(DeleteBehavior.Restrict); // Adminler müşteriyle bağlı değilse silinmesin
 
             // Order - OrderItem (1-N)
             modelBuilder.Entity<Order>()
@@ -69,7 +69,7 @@ namespace API.Context
                 .WithOne(i => i.Order)
                 .HasForeignKey(i => i.OrderId);
 
-            // Product - OrderItem (1-N)
+            // Product - CustomerProductPrice (1-N)
             modelBuilder.Entity<Product>()
                 .HasMany(p => p.SpecialPrices)
                 .WithOne(cp => cp.Product)
@@ -81,10 +81,36 @@ namespace API.Context
                 .WithOne(cp => cp.Customer)
                 .HasForeignKey(cp => cp.CustomerId);
 
-            //default values and column definitions
+            // Default values
             modelBuilder.Entity<Stock>()
                .Property(s => s.Quantity)
                .HasDefaultValue(0);
+
+            // Decimal hassasiyet ayarları
+            modelBuilder.Entity<Customer>()
+                .Property(c => c.Balance)
+                .HasPrecision(18, 2);
+
+            modelBuilder.Entity<CustomerProductPrice>()
+                .Property(p => p.SpecialPrice)
+                .HasPrecision(18, 2);
+
+            modelBuilder.Entity<Order>()
+                .Property(o => o.TotalAmount)
+                .HasPrecision(18, 2);
+
+            modelBuilder.Entity<OrderItem>()
+                .Property(oi => oi.UnitPrice)
+                .HasPrecision(18, 2);
+
+            modelBuilder.Entity<Product>()
+                .Property(p => p.BuyingPrice)
+                .HasPrecision(18, 2);
+
+            modelBuilder.Entity<Product>()
+                .Property(p => p.Price)
+                .HasPrecision(18, 2);
         }
+
     }
 }

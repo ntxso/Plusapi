@@ -44,7 +44,7 @@ namespace API.Migrations
                 {
                     table.PrimaryKey("PK_Customers", x => x.Id);
                 });
-            //burasi son eklenen kod satiri
+
             migrationBuilder.CreateTable(
                 name: "EmailVerifications",
                 columns: table => new

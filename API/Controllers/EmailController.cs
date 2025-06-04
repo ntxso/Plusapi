@@ -30,8 +30,8 @@ public class VerificationController : ControllerBase
             return BadRequest("Bu kullanıcı adı zaten mevcut.");
 
 
-        var sendGridApiKey = _configuration["SendGrid:ApiKey"];
-        
+        var sendGridApiKey = _configuration["SENDGRID_API_KEY"] ?? _configuration["SendGrid:ApiKey"];
+
         if (string.IsNullOrWhiteSpace(request.Email) || !IsValidEmail(request.Email))
             return BadRequest("Geçerli bir e-posta adresi giriniz.");
 

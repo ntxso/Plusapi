@@ -11,10 +11,15 @@ using DotNetEnv;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
+var isDevelopment = builder.Environment.IsDevelopment();
+//var connectionString = isDevelopment
+//    ? Environment.GetEnvironmentVariable("CONNECTION_STRING_DEVELOPMENT")
+//    : Environment.GetEnvironmentVariable("CONNECTION_STRING_PRODUCTION");
+
 // ENV deðiþkenlerini yükle (.env dosyasýndan)
 DotNetEnv.Env.Load();
-
-// Microsoft yapýlandýrma sistemi ile ENV ortamýný al
+builder.WebHost.UseSetting("detailedErrors", "true");
 builder.Configuration
     .SetBasePath(Directory.GetCurrentDirectory())
     .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
@@ -33,10 +38,25 @@ builder.Services.AddControllers()
 
 builder.Services.AddScoped<TokenService>();
 builder.Services.AddScoped<UserService>();
-
+if (!isDevelopment)
+{
+    Console.WriteLine("----- "+config.GetConnectionString("Development"));
+}
+else {     Console.WriteLine("----- "+config.GetConnectionString("Production"));
+}
 // DbContext
+var _conString = isDevelopment
+    ? config.GetConnectionString("Development")
+    : config.GetConnectionString("Production");
+
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(config.GetConnectionString("DefaultConnection")));
+        options.UseSqlServer(_conString));
+
+builder.Services.AddSingleton(new SystemSettings
+{
+    ConnectionString = _conString??"baðlantý dizesi okunamadý",
+    DefaultConnection = _conString?? "okunamadý !"
+});
 
 builder.Services.AddSingleton<CloudinaryService>();
 
@@ -67,19 +87,13 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 
 builder.Services.AddAuthorization();
-
+Console.WriteLine($"Environment: {builder.Environment.EnvironmentName}");
 var app = builder.Build();
 
 Console.WriteLine("==== ENVIRONMENT CONFIG DEBUG ====");
 Console.WriteLine($"ASPNETCORE_ENVIRONMENT: {config["ASPNETCORE_ENVIRONMENT"]}");
 Console.WriteLine($"ConnectionStrings:DefaultConnection: {config.GetConnectionString("DefaultConnection")}");
-Console.WriteLine($"JWT_ISSUER: {config["JWT_ISSUER"]}");
-Console.WriteLine($"JWT_AUDIENCE: {config["JWT_AUDIENCE"]}");
-Console.WriteLine($"JWT_KEY: {config["JWT_KEY"]}");
-Console.WriteLine($"Cloudinary:CloudName: {config["Cloudinary:CloudName"]}");
-Console.WriteLine($"Cloudinary:ApiKey: {config["Cloudinary:ApiKey"]}");
-Console.WriteLine($"Cloudinary:ApiSecret: {config["Cloudinary:ApiSecret"]}");
-Console.WriteLine("==================================");
+
 
 // Veritabaný migration
 using (var scope = app.Services.CreateScope())

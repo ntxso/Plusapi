@@ -42,7 +42,8 @@ public class AuthController : ControllerBase
         {
             Token = token,
             Role = user.Role,
-            Email = user.Email
+            Email = user.Email,
+            Name= user.Customer?.Name // Bayi adı varsa döndür
         });
     }
 

@@ -1,6 +1,7 @@
 ﻿using API.Context;
 using API.Models;
 using API.Security;
+using Azure.Core;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Services
@@ -32,6 +33,20 @@ namespace API.Services
             await _context.SaveChangesAsync();
 
             return user;
+        }
+
+        public async Task<User?> GetUserByEmailAsync(string email)
+        {
+            return await _context.Users.
+                Include(u=>u.Customer)
+                .FirstOrDefaultAsync(u => u.Email == email);
+        }
+        public async Task<User?> GetUserByIdAsync(int id)
+        {
+            return await _context.Users
+                .Include(u => u.Customer)
+           .FirstOrDefaultAsync(u => u.Id == id);
+
         }
     }
 

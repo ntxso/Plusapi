@@ -23,8 +23,7 @@ namespace API.Models
         public int DistrictId { get; set; }
         public string Address { get; set; }
         public SalesType SalesType { get; set; }
-        public string Email { get; set; }
-        public string Password { get; set; }
+
     }
     public class LoginRequest
     {

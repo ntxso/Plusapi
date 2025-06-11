@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace API.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250604121515_InitialCreate")]
+    [Migration("20250611142812_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -24,6 +24,63 @@ namespace API.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("API.Models.Cart", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("CustomerId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CustomerId");
+
+                    b.ToTable("Carts");
+                });
+
+            modelBuilder.Entity("API.Models.CartItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CartId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ColorId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("PhoneModelId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CartId");
+
+                    b.HasIndex("ColorId");
+
+                    b.HasIndex("PhoneModelId");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("CartItems");
+                });
 
             modelBuilder.Entity("API.Models.Category", b =>
                 {
@@ -42,6 +99,23 @@ namespace API.Migrations
                     b.ToTable("Categories");
                 });
 
+            modelBuilder.Entity("API.Models.Color", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Colors");
+                });
+
             modelBuilder.Entity("API.Models.Customer", b =>
                 {
                     b.Property<int>("Id")
@@ -55,6 +129,7 @@ namespace API.Migrations
                         .HasColumnType("nvarchar(255)");
 
                     b.Property<decimal>("Balance")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("CityId")
@@ -101,6 +176,7 @@ namespace API.Migrations
                         .HasColumnType("int");
 
                     b.Property<decimal?>("SpecialPrice")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTime?>("UpdatedAt")
@@ -157,6 +233,7 @@ namespace API.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<decimal?>("TotalAmount")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
@@ -174,7 +251,13 @@ namespace API.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int?>("ColorId")
+                        .HasColumnType("int");
+
                     b.Property<int>("OrderId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("PhoneModelId")
                         .HasColumnType("int");
 
                     b.Property<int>("ProductId")
@@ -184,15 +267,41 @@ namespace API.Migrations
                         .HasColumnType("int");
 
                     b.Property<decimal>("UnitPrice")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ColorId");
+
                     b.HasIndex("OrderId");
+
+                    b.HasIndex("PhoneModelId");
 
                     b.HasIndex("ProductId");
 
                     b.ToTable("OrderItems");
+                });
+
+            modelBuilder.Entity("API.Models.PhoneModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Brand")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Model")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("PhoneModels");
                 });
 
             modelBuilder.Entity("API.Models.Product", b =>
@@ -207,6 +316,7 @@ namespace API.Migrations
                         .HasColumnType("nvarchar(20)");
 
                     b.Property<decimal?>("BuyingPrice")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<int?>("CategoryId")
@@ -223,6 +333,7 @@ namespace API.Migrations
                         .HasColumnType("nvarchar(255)");
 
                     b.Property<decimal?>("Price")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<int?>("Publish")
@@ -233,6 +344,21 @@ namespace API.Migrations
                     b.HasIndex("CategoryId");
 
                     b.ToTable("Products");
+                });
+
+            modelBuilder.Entity("API.Models.ProductColor", b =>
+                {
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ColorId")
+                        .HasColumnType("int");
+
+                    b.HasKey("ProductId", "ColorId");
+
+                    b.HasIndex("ColorId");
+
+                    b.ToTable("ProductColors");
                 });
 
             modelBuilder.Entity("API.Models.ProductImage", b =>
@@ -272,6 +398,21 @@ namespace API.Migrations
                     b.HasIndex("ProductId");
 
                     b.ToTable("ProductImages");
+                });
+
+            modelBuilder.Entity("API.Models.ProductPhoneModel", b =>
+                {
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PhoneModelId")
+                        .HasColumnType("int");
+
+                    b.HasKey("ProductId", "PhoneModelId");
+
+                    b.HasIndex("PhoneModelId");
+
+                    b.ToTable("ProductPhoneModels");
                 });
 
             modelBuilder.Entity("API.Models.Stock", b =>
@@ -359,6 +500,50 @@ namespace API.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("API.Models.Cart", b =>
+                {
+                    b.HasOne("API.Models.Customer", "Customer")
+                        .WithMany("Carts")
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Customer");
+                });
+
+            modelBuilder.Entity("API.Models.CartItem", b =>
+                {
+                    b.HasOne("API.Models.Cart", "Cart")
+                        .WithMany("Items")
+                        .HasForeignKey("CartId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("API.Models.Color", "Color")
+                        .WithMany()
+                        .HasForeignKey("ColorId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("API.Models.PhoneModel", "PhoneModel")
+                        .WithMany()
+                        .HasForeignKey("PhoneModelId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("API.Models.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Cart");
+
+                    b.Navigation("Color");
+
+                    b.Navigation("PhoneModel");
+
+                    b.Navigation("Product");
+                });
+
             modelBuilder.Entity("API.Models.CustomerProductPrice", b =>
                 {
                     b.HasOne("API.Models.Customer", "Customer")
@@ -391,11 +576,21 @@ namespace API.Migrations
 
             modelBuilder.Entity("API.Models.OrderItem", b =>
                 {
+                    b.HasOne("API.Models.Color", "Color")
+                        .WithMany()
+                        .HasForeignKey("ColorId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("API.Models.Order", "Order")
                         .WithMany("Items")
                         .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("API.Models.PhoneModel", "PhoneModel")
+                        .WithMany()
+                        .HasForeignKey("PhoneModelId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("API.Models.Product", "Product")
                         .WithMany()
@@ -403,7 +598,11 @@ namespace API.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.Navigation("Color");
+
                     b.Navigation("Order");
+
+                    b.Navigation("PhoneModel");
 
                     b.Navigation("Product");
                 });
@@ -417,6 +616,25 @@ namespace API.Migrations
                     b.Navigation("Category");
                 });
 
+            modelBuilder.Entity("API.Models.ProductColor", b =>
+                {
+                    b.HasOne("API.Models.Color", "Color")
+                        .WithMany("ProductColors")
+                        .HasForeignKey("ColorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("API.Models.Product", "Product")
+                        .WithMany("ProductColors")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Color");
+
+                    b.Navigation("Product");
+                });
+
             modelBuilder.Entity("API.Models.ProductImage", b =>
                 {
                     b.HasOne("API.Models.Product", "Product")
@@ -424,6 +642,25 @@ namespace API.Migrations
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("API.Models.ProductPhoneModel", b =>
+                {
+                    b.HasOne("API.Models.PhoneModel", "PhoneModel")
+                        .WithMany("ProductPhoneModels")
+                        .HasForeignKey("PhoneModelId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("API.Models.Product", "Product")
+                        .WithMany("CompatiblePhoneModels")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("PhoneModel");
 
                     b.Navigation("Product");
                 });
@@ -460,13 +697,25 @@ namespace API.Migrations
                     b.Navigation("Customer");
                 });
 
+            modelBuilder.Entity("API.Models.Cart", b =>
+                {
+                    b.Navigation("Items");
+                });
+
             modelBuilder.Entity("API.Models.Category", b =>
                 {
                     b.Navigation("Products");
                 });
 
+            modelBuilder.Entity("API.Models.Color", b =>
+                {
+                    b.Navigation("ProductColors");
+                });
+
             modelBuilder.Entity("API.Models.Customer", b =>
                 {
+                    b.Navigation("Carts");
+
                     b.Navigation("Orders");
 
                     b.Navigation("SpecialPrices");
@@ -479,9 +728,18 @@ namespace API.Migrations
                     b.Navigation("Items");
                 });
 
+            modelBuilder.Entity("API.Models.PhoneModel", b =>
+                {
+                    b.Navigation("ProductPhoneModels");
+                });
+
             modelBuilder.Entity("API.Models.Product", b =>
                 {
+                    b.Navigation("CompatiblePhoneModels");
+
                     b.Navigation("Images");
+
+                    b.Navigation("ProductColors");
 
                     b.Navigation("SpecialPrices");
 

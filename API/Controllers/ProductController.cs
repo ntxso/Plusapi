@@ -11,10 +11,12 @@ namespace YourNamespace.Controllers
     public class ProductsController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly ILogger<ProductsController> _logger;
 
-        public ProductsController(AppDbContext context)
+        public ProductsController(AppDbContext context, ILogger<ProductsController> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
         // GET: api/products
@@ -66,6 +68,10 @@ namespace YourNamespace.Controllers
         [HttpPost]
         public async Task<ActionResult<Product>> CreateProduct(CreateProductDto dto)
         {
+            var user = User.Identity?.Name ?? "Anonymous";
+            //_logger.LogInformation($"User {user} is requesting product with ID {user}");
+            //_logger.LogInformation("Kullanıcı {user} sepete ürün ekledi: {@Product}", user, dto);
+            _logger.LogInformation("otomatik kullanıcı bilgisi gelecek mi ürün eklendi");
             var product = new Product
             {
                 Name = dto.Name,
@@ -116,7 +122,41 @@ namespace YourNamespace.Controllers
             if (id != product.Id)
                 return BadRequest();
 
-            _context.Entry(product).State = EntityState.Modified;
+            // Mevcut ürünü ve ilişkili tag'ini veritabanından çekiyoruz
+            var existingProduct = await _context.Products
+                .Include(p => p.Tag) // Tag'ı eager loading ile yüklüyoruz
+                .FirstOrDefaultAsync(p => p.Id == id);
+
+            if (existingProduct == null)
+                return NotFound();
+
+            // Ana ürün bilgilerini güncelle
+            _context.Entry(existingProduct).CurrentValues.SetValues(product);
+
+            // Tag işlemleri
+            if (product.Tag != null && !string.IsNullOrWhiteSpace(product.Tag.Value))
+            {
+                if (existingProduct.Tag != null)
+                {
+                    // Varolan tag'i güncelle
+                    existingProduct.Tag.Value = product.Tag.Value;
+                }
+                else
+                {
+                    // Yeni tag oluştur
+                    existingProduct.Tag = new Tag
+                    {
+                        ProductId = product.Id,
+                        Value = product.Tag.Value
+                    };
+                    _context.Tags.Add(existingProduct.Tag);
+                }
+            }
+            else if (existingProduct.Tag != null)
+            {
+                // Gelen tag null/boş ama veritabanında tag varsa sil
+                _context.Tags.Remove(existingProduct.Tag);
+            }
 
             try
             {

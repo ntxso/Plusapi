@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -38,6 +39,8 @@ public class AuthController : ControllerBase
 
         var token = _tokenService.CreateToken(user);
 
+        //var user = User.Identity?.Name ?? "Anonymous";
+        Log.Information($"Kullanıcı giriş yaptı: {user.Email}", "testUser");
         return Ok(new LoginResponse
         {
             Token = token,

@@ -41,7 +41,31 @@ namespace API.Models
         public Tag? Tag { get; set; }
         public ICollection<ProductImage>? Images { get; set; }
         public ICollection<CustomerProductPrice>? SpecialPrices { get; set; }
+        public ICollection<ProductPhoneModel>? CompatiblePhoneModels { get; set; }
+        public ICollection<ProductColor>? ProductColors { get; set; }
 
+
+    }
+
+    public class PhoneModel
+    {
+        public int Id { get; set; }
+
+        [Column(TypeName = "nvarchar(100)")]
+        public string Brand { get; set; }
+
+        [Column(TypeName = "nvarchar(100)")]
+        public string Model { get; set; }
+
+        public ICollection<ProductPhoneModel>? ProductPhoneModels { get; set; }
+    }
+    public class ProductPhoneModel
+    {
+        public int ProductId { get; set; }
+        public Product? Product { get; set; }
+
+        public int PhoneModelId { get; set; }
+        public PhoneModel? PhoneModel { get; set; }
     }
 
     public class Stock
@@ -116,6 +140,8 @@ namespace API.Models
 
         public ICollection<Order>? Orders { get; set; }
         public ICollection<CustomerProductPrice>? SpecialPrices { get; set; }
+
+        public ICollection<Cart> Carts { get; set; }
     }
 
     public class Order
@@ -141,12 +167,19 @@ namespace API.Models
         public int ProductId { get; set; }
         public Product? Product { get; set; }
 
+        public int? ColorId { get; set; } // Ekstra
+        public Color? Color { get; set; }
+
+        public int? PhoneModelId { get; set; } // Ekstra
+        public PhoneModel? PhoneModel { get; set; }
+
         public int Quantity { get; set; }
 
-        public decimal UnitPrice { get; set; } // O anki fiyat burada kayıt altına alınır
+        public decimal UnitPrice { get; set; }
 
         public decimal TotalPrice => Quantity * UnitPrice;
     }
+
     public class CustomerProductPrice
     {
         public int Id { get; set; }
@@ -162,7 +195,53 @@ namespace API.Models
         public DateTime? UpdatedAt { get; set; } = DateTime.UtcNow;
     }
 
+    public class Color
+    {
+        public int Id { get; set; }
 
+        [Column(TypeName = "nvarchar(50)")]
+        public string Name { get; set; }
+
+        public ICollection<ProductColor>? ProductColors { get; set; }
+    }
+
+    public class ProductColor
+    {
+        public int ProductId { get; set; }
+        public Product? Product { get; set; }
+
+        public int ColorId { get; set; }
+        public Color? Color { get; set; }
+    }
+
+    public class Cart
+    {
+        public int Id { get; set; }
+        public int CustomerId { get; set; }
+        public Customer? Customer { get; set; }
+
+        public ICollection<CartItem> Items { get; set; } = new List<CartItem>();
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    }
+
+    public class CartItem
+    {
+        public int Id { get; set; }
+
+        public int CartId { get; set; }
+        public Cart? Cart { get; set; }
+
+        public int ProductId { get; set; }
+        public Product? Product { get; set; }
+
+        public int? ColorId { get; set; }
+        public Color? Color { get; set; }
+
+        public int? PhoneModelId { get; set; }
+        public PhoneModel? PhoneModel { get; set; }
+
+        public int Quantity { get; set; }
+    }
 
     class temp
     {

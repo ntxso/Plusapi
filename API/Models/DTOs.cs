@@ -2,6 +2,21 @@
 
 namespace API.Models
 {
+    public class CreateOrderDto
+    {
+        public int CustomerId { get; set; }
+    }
+
+    public class CartItemDto
+    {
+        public int CustomerId { get; set; }
+        public int ProductId { get; set; }
+        public int? ColorId { get; set; }
+        public int? PhoneModelId { get; set; }
+        public int Quantity { get; set; }
+    }
+
+
     public class CreateProductDto
     {
         public string Name { get; set; }

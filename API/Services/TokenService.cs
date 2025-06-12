@@ -23,8 +23,9 @@ public class TokenService
             new Claim(ClaimTypes.Name, user.Email),
             new Claim(ClaimTypes.Role, user.Role),
             new Claim("UserId", user.Id.ToString()),
-            new Claim(ClaimTypes.Email,user.Email)
-            
+            new Claim(ClaimTypes.Email,user.Email),
+            new Claim("CustomerId", user.CustomerId?.ToString() ?? "0")
+
         };
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));

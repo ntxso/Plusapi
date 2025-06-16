@@ -59,6 +59,10 @@ public class TablesController : ControllerBase
             case "customers":
                 var customers = await _context.Customers.FromSqlRaw(query).ToListAsync();
                 return Ok(customers);
+            case "orders":
+                var orders = await _context.Orders.FromSqlRaw(query).ToListAsync();
+                return Ok(orders);
+
             default:
                 return NotFound("Table not found");
         }

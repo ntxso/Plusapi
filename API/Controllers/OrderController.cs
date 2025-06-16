@@ -66,6 +66,87 @@ namespace API.Controllers
                     .ThenInclude(i => i.PhoneModel)
                 .ToListAsync();
         }
+
+        // GET: api/order/5
+        [HttpGet("order/{orderId}")]
+        public async Task<ActionResult<Order>> GetOrderById(int orderId)
+        {
+            var order = await _context.Orders
+                .Include(o => o.Customer)
+                .Include(o => o.Items!)
+                    .ThenInclude(i => i.Product)
+                .Include(o => o.Items!)
+                    .ThenInclude(i => i.Color)
+                .Include(o => o.Items!)
+                    .ThenInclude(i => i.PhoneModel)
+                .FirstOrDefaultAsync(o => o.Id == orderId);
+
+            if (order == null)
+                return NotFound();
+
+            return order;
+        }
+
+
+        // GET: api/order/admin
+        [HttpGet("admin")]
+        public async Task<ActionResult<IEnumerable<Order>>> GetAllOrdersForAdmin(
+            [FromQuery] DateTime? startDate,
+            [FromQuery] DateTime? endDate,
+            [FromQuery] int? customerId,
+            [FromQuery] OrderStatus? status)
+        {
+            var query = _context.Orders
+                .Include(o => o.Customer)
+                .Include(o => o.Items)
+                    .ThenInclude(i => i.Product)
+                .Include(o => o.Items)
+                    .ThenInclude(i => i.Color)
+                .Include(o => o.Items)
+                    .ThenInclude(i => i.PhoneModel)
+                .AsQueryable();
+
+            if (startDate.HasValue)
+                query = query.Where(o => o.OrderDate >= startDate.Value);
+
+            if (endDate.HasValue)
+            {
+                DateTime? endDateValue = endDate.Value.Date.AddDays(1).AddTicks(-100); // Gün sonuna kadar
+                query = query.Where(o => o.OrderDate <= endDateValue);
+            }
+
+            if (customerId.HasValue)
+                query = query.Where(o => o.CustomerId == customerId.Value);
+
+            if (status.HasValue)
+                query = query.Where(o => o.Status == status.Value);
+            //else
+                //query = query.Where(o => o.Status == OrderStatus.Pending); // varsayılan: hazırlanıyor
+
+            var result = await query
+                .OrderByDescending(o => o.OrderDate)
+                .ToListAsync();
+
+            return result;
+        }
+
+        // PUT: api/order/status/5
+        [HttpPost("status/update/{orderId}")]
+        public async Task<IActionResult> UpdateOrderStatus(int orderId, [FromBody] OrderStatus newStatus)
+        {
+            var order = await _context.Orders.FindAsync(orderId);
+            if (order == null)
+                return NotFound();
+
+            order.Status = newStatus;
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+
+
+
     }
 
 }

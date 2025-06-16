@@ -156,6 +156,7 @@ namespace API.Models
         public ICollection<OrderItem>? Items { get; set; }
 
         public decimal? TotalAmount { get; set; }
+        public OrderStatus Status { get; set; } = OrderStatus.Pending;
     }
     public class OrderItem
     {

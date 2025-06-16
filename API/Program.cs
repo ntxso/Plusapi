@@ -78,7 +78,7 @@ try
         : config.GetConnectionString("Production");
 
     Log.Logger = new LoggerConfiguration()
-    .MinimumLevel.Information()
+    .MinimumLevel.Warning()
     .Enrich.FromLogContext()
     .WriteTo.MSSqlServer(
         connectionString: _conString, // yukarýdan gelen uygun baðlantý dizesi
@@ -135,7 +135,7 @@ try
     Console.WriteLine($"Environment: {builder.Environment.EnvironmentName}");
     var app = builder.Build();
 
-   
+
 
     Console.WriteLine("==== ENVIRONMENT CONFIG DEBUG ====");
     Console.WriteLine($"ASPNETCORE_ENVIRONMENT: {config["ASPNETCORE_ENVIRONMENT"]}");
@@ -151,25 +151,25 @@ try
         if (!db.Categories.Any())
         {
             db.Categories.AddRange(new List<Category>
- {
-     new Category { Name = "Plus Telefon Kýlýfý" },
-     new Category { Name = "Outlet Telefon Kýlýfý" },
-     new Category { Name = "Ekran Koruyucu" },
-     new Category { Name = "Þarj Cihazý" },
-     new Category { Name = "Kablo" },
-     new Category { Name = "Kulaklýk" },
-     new Category { Name = "Hoparlör" },
-     new Category { Name = "Telefon Tutucu" },
-     new Category { Name = "Powerbank" },
-     new Category { Name = "Batarya" },
-     new Category { Name = "Airpods Aksesuar" },
-     new Category { Name = "Tablet Aksesuar" },
-     new Category { Name = "Saat Aksesuar" },
-     new Category { Name = "Bilgisayar Ürünleri" },
-     new Category { Name = "Bellek" },
-     new Category { Name = "Kablo Koruyucu" },
-     new Category { Name = "Diðer" }
- });
+            {
+                new Category { Name = "Plus Telefon Kýlýfý" },
+                new Category { Name = "Outlet Telefon Kýlýfý" },
+                new Category { Name = "Ekran Koruyucu" },
+                new Category { Name = "Þarj Cihazý" },
+                new Category { Name = "Kablo" },
+                new Category { Name = "Kulaklýk" },
+                 new Category { Name = "Hoparlör" },
+                 new Category { Name = "Telefon Tutucu" },
+                 new Category { Name = "Powerbank" },
+                 new Category { Name = "Batarya" },
+                 new Category { Name = "Airpods Aksesuar" },
+                 new Category { Name = "Tablet Aksesuar" },
+                 new Category { Name = "Saat Aksesuar" },
+                 new Category { Name = "Bilgisayar Ürünleri" },
+                 new Category { Name = "Bellek" },
+                 new Category { Name = "Kablo Koruyucu" },
+                 new Category { Name = "Diðer" }
+            });
             await db.SaveChangesAsync();
         }
 

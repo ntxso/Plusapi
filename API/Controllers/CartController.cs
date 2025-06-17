@@ -24,6 +24,7 @@ namespace API.Controllers
             var cart = await _context.Carts
                 .Include(c => c.Items)
                     .ThenInclude(i => i.Product)
+                        .ThenInclude(p => p.Images)
                 .Include(c => c.Items)
                     .ThenInclude(i => i.Color)
                 .Include(c => c.Items)
@@ -92,7 +93,7 @@ namespace API.Controllers
         }
 
         // DELETE: api/cart/remove-item/{cartItemId}
-        [HttpDelete("remove-item/{cartItemId}")]
+        [HttpPost("remove-item/{cartItemId}")]
         public async Task<IActionResult> RemoveFromCart(int cartItemId)
         {
             var item = await _context.CartItems.FindAsync(cartItemId);
@@ -105,7 +106,7 @@ namespace API.Controllers
         }
 
         // DELETE: api/cart/clear/{customerId}
-        [HttpDelete("clear/{customerId}")]
+        [HttpPost("clear/{customerId}")]
         public async Task<IActionResult> ClearCart(int customerId)
         {
             var cart = await _context.Carts

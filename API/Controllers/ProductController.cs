@@ -71,7 +71,7 @@ namespace YourNamespace.Controllers
             var user = User.Identity?.Name ?? "Anonymous";
             //_logger.LogInformation($"User {user} is requesting product with ID {user}");
             //_logger.LogInformation("Kullanıcı {user} sepete ürün ekledi: {@Product}", user, dto);
-            _logger.LogInformation("otomatik kullanıcı bilgisi gelecek mi ürün eklendi");
+            _logger.LogWarning("otomatik kullanıcı bilgisi gelecek mi ürün eklendi");
             var product = new Product
             {
                 Name = dto.Name,

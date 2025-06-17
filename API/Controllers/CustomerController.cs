@@ -3,6 +3,7 @@ using API.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 namespace API.Controllers
 {
@@ -63,10 +64,22 @@ namespace API.Controllers
         }
 
         [HttpPost("Update/{id}")]
-        public async Task<IActionResult> UpdateCustomer(int id, Customer customer)
+        public async Task<IActionResult> UpdateCustomer(int id, CreateCustomerDto customerDto)
         {
-            if (id != customer.Id) return BadRequest();
-            _context.Entry(customer).State = EntityState.Modified;
+            Console.WriteLine($"müşteri:{JsonConvert.SerializeObject(customerDto)}");
+            if (id != customerDto.Id) return BadRequest();
+            var existingCustomer = await _context.Customers.FindAsync(id);
+            if (existingCustomer == null)
+            {
+                Console.WriteLine($"Hata: Müşteri bulunamadı. ID: {id}");
+                return NotFound($"ID'si {id} olan müşteri bulunamadı.");
+            }
+
+            existingCustomer.Name = customerDto.Name;
+            existingCustomer.Phone = customerDto.Phone;
+            existingCustomer.Address = customerDto.Address;
+            existingCustomer.CompanyName= customerDto.CompanyName;
+            //_context.Entry(customer).State = EntityState.Modified;
             await _context.SaveChangesAsync();
             return NoContent();
         }

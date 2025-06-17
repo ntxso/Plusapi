@@ -95,7 +95,7 @@ try
     builder.Host.UseSerilog();
 
     builder.Services.AddDbContext<AppDbContext>(options =>
-            options.UseSqlServer(_conString));
+            options.UseSqlServer(_conString, opt => opt.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)));
 
     builder.Services.AddSingleton(new SystemSettings
     {
@@ -110,6 +110,9 @@ try
         options.AddPolicy("AllowAll", policy =>
         {
             policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
+            //policy.WithOrigins("http://bayi.plusaksesuar.com") // Sadece bu domain'e izin ver
+            //  .AllowAnyHeader()
+            //  .AllowAnyMethod();
         });
     });
 

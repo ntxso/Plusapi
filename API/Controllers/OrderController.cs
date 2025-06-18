@@ -130,7 +130,7 @@ namespace API.Controllers
             return result;
         }
 
-        // PUT: api/order/status/5
+        // POST: api/order/status/5
         [HttpPost("status/update/{orderId}")]
         public async Task<IActionResult> UpdateOrderStatus(int orderId, [FromBody] OrderStatus newStatus)
         {
@@ -144,7 +144,16 @@ namespace API.Controllers
             return NoContent();
         }
 
-
+        [HttpPost("delete/{orderId}")]
+        public async Task<IActionResult> DeleteOrder(int orderId)
+        {
+            var order = await _context.Orders.FindAsync(orderId);
+            if (order == null)
+                return NotFound();
+            _context.Orders.Remove(order);
+            await _context.SaveChangesAsync();
+            return NoContent();
+        }
 
 
     }

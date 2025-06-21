@@ -64,6 +64,12 @@ try
 
     builder.Services.AddScoped<TokenService>();
     builder.Services.AddScoped<UserService>();
+
+    builder.Services.Configure<EmailSettings>(config.GetSection("EmailSettings"));
+    // EmailService'i Dependency Injection container'a kaydediyoruz.
+    // AddTransient: Her enjekte edildiðinde veya istendiðinde yeni bir EmailService örneði oluþturulur.
+    builder.Services.AddTransient<EmailService>();
+
     if (isDevelopment)
     {
         Console.WriteLine("----- " + config.GetConnectionString("Development"));
@@ -76,6 +82,8 @@ try
     var _conString = isDevelopment
         ? config.GetConnectionString("Development")
         : config.GetConnectionString("Production");
+
+
 
     Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Warning()
@@ -102,6 +110,8 @@ try
         ConnectionString = _conString ?? "baðlantý dizesi okunamadý",
         DefaultConnection = _conString ?? "okunamadý !"
     });
+
+    builder.Services.AddSingleton<EmailService>();
 
     builder.Services.AddSingleton<CloudinaryService>();
 

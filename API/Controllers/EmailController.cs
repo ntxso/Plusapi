@@ -1,5 +1,6 @@
 ﻿using API.Context;
 using API.Models;
+using Azure.Core;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -15,15 +16,44 @@ public class VerificationController : ControllerBase
 {
     private readonly IConfiguration _configuration;
     private readonly AppDbContext _dbContext;
+    private readonly EmailService _emailService;
 
-    public VerificationController(IConfiguration configuration, AppDbContext dbContext)
+    public VerificationController(IConfiguration configuration, AppDbContext dbContext, EmailService emailService)
     {
         _configuration = configuration;
         _dbContext = dbContext;
+        _emailService = emailService;
     }
+
 
     [HttpPost("send-verification-code")]
     public async Task<IActionResult> SendVerificationCode([FromBody] EmailRequest request)
+    {
+        // ... (Doğrulama kodu oluşturma vb.)
+        var verificationCode = GenerateVerificationCode();
+        Console.WriteLine("Doğrulama kodu: (servisten önce) " + verificationCode);
+        bool sent = await _emailService.SendVerificationEmail(request.Email, verificationCode);
+        Console.WriteLine("E-posta gönderildi mi: (servisten sonra) başarılı mı" + sent);
+        if (sent)
+        {
+            _dbContext.EmailVerifications.Add(new EmailVerification
+            {
+                Email = request.Email,
+                Code = verificationCode,
+                CreatedAt = DateTime.UtcNow,
+                IsUsed = false
+            });
+            await _dbContext.SaveChangesAsync();
+            return Ok(new { Message = "Doğrulama kodu e-postanıza gönderildi." });
+        }
+        else
+        {
+            return StatusCode(500, new { Message = "E-posta gönderme başarısız oldu." });
+        }
+    }
+
+    [HttpPost("send-verification-code-old")]
+    public async Task<IActionResult> SendVerificationCodeOld([FromBody] EmailRequest request)
     {
         // Aynı kullanıcı adı var mı?
         if (await _dbContext.Users.AnyAsync(u => u.Email == request.Email))
@@ -78,6 +108,8 @@ public class VerificationController : ControllerBase
         //return Ok(new { Message = "Doğrulama kodu gönderildi.", ExpiresAt = DateTime.Now.AddMinutes(10) });
     }
 
+
+    
     [HttpPost("verify-code")]
     public async Task<IActionResult> VerifyCode([FromBody] VerifyCodeRequest request)
     {

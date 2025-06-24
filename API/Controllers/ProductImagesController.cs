@@ -1,5 +1,6 @@
 ﻿using API.Context;
 using API.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -19,6 +20,7 @@ namespace API.Controllers
         }
 
         [HttpPost("upload")]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> UploadImage(IFormFile file, int productId)
         {
             if (file == null || file.Length == 0)
@@ -47,13 +49,10 @@ namespace API.Controllers
 
                 return StatusCode(500, $"Upload hatası: {ex.Message}");
             }
-
-            
-
-            
         }
 
         [HttpPost("Delete/{id}")]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> DeleteImage(int id)
         {
             var image = await _context.ProductImages.FindAsync(id);

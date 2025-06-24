@@ -1,5 +1,6 @@
 ﻿using API.Context;
 using API.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -38,6 +39,7 @@ namespace API.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "admin")]
         public async Task<ActionResult> Create(ProductColor model)
         {
             var exists = await _context.ProductColors
@@ -52,6 +54,7 @@ namespace API.Controllers
         }
 
         [HttpPost("delete")]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> Delete([FromQuery] int productId, [FromQuery] int colorId)
         {
             var relation = await _context.ProductColors
@@ -65,6 +68,7 @@ namespace API.Controllers
         }
 
         [HttpPost("remove")]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> Remove([FromBody] ProductColor model)
         {
             var relation = await _context.ProductColors

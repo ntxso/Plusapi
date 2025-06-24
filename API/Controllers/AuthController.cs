@@ -57,7 +57,7 @@ public class AuthController : ControllerBase
         return computed == hashed;
     }
 
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "admin")]
     [HttpGet("admin-sadece")]
     public IActionResult OnlyAdminCanSee()
     {

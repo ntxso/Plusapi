@@ -1,5 +1,6 @@
 ﻿using API.Context;
 using API.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -19,6 +20,7 @@ namespace API.Controllers
 
         // GET: api/cart/{customerId}
         [HttpGet("{customerId}")]
+        [Authorize(Roles = "admin, dealer")]
         public async Task<ActionResult<Cart>> GetCart(int customerId)
         {
             var cart = await _context.Carts
@@ -43,6 +45,7 @@ namespace API.Controllers
 
         // POST: api/cart/add-item
         [HttpPost("add-item")]
+        [Authorize(Roles = "dealer")]
         public async Task<IActionResult> AddToCart(CartItemDto dto)
         {
             var cart = await _context.Carts
@@ -81,6 +84,7 @@ namespace API.Controllers
         }
 
         [HttpPost("items/update/{itemId}")]
+        [Authorize(Roles = "dealer")]
         public async Task<IActionResult> UpdateCartItem(int itemId, [FromBody] UpdateCartItemDto dto)
         {
             var item = await _context.CartItems.FindAsync(itemId);
@@ -94,6 +98,7 @@ namespace API.Controllers
 
         // DELETE: api/cart/remove-item/{cartItemId}
         [HttpPost("remove-item/{cartItemId}")]
+        [Authorize(Roles = "dealer")]
         public async Task<IActionResult> RemoveFromCart(int cartItemId)
         {
             var item = await _context.CartItems.FindAsync(cartItemId);
@@ -107,6 +112,7 @@ namespace API.Controllers
 
         // DELETE: api/cart/clear/{customerId}
         [HttpPost("clear/{customerId}")]
+        [Authorize(Roles = "admin,dealer")]
         public async Task<IActionResult> ClearCart(int customerId)
         {
             var cart = await _context.Carts

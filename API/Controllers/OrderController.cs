@@ -1,5 +1,6 @@
 ﻿using API.Context;
 using API.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -19,6 +20,7 @@ namespace API.Controllers
 
         // POST: api/order
         [HttpPost]
+        [Authorize(Roles = "dealer")]
         public async Task<IActionResult> CreateOrder([FromBody] CreateOrderDto dto)
         {
             var cart = await _context.Carts
@@ -54,6 +56,7 @@ namespace API.Controllers
 
         // GET: api/order/customer/5
         [HttpGet("customer/{customerId}")]
+        [Authorize(Roles = "admin, dealer")]
         public async Task<ActionResult<IEnumerable<Order>>> GetOrdersByCustomer(int customerId)
         {
             return await _context.Orders
@@ -69,6 +72,7 @@ namespace API.Controllers
 
         // GET: api/order/5
         [HttpGet("order/{orderId}")]
+        [Authorize(Roles = "admin, dealer")]
         public async Task<ActionResult<Order>> GetOrderById(int orderId)
         {
             var order = await _context.Orders
@@ -90,6 +94,7 @@ namespace API.Controllers
 
         // GET: api/order/admin
         [HttpGet("admin")]
+        [Authorize(Roles = "admin")]
         public async Task<ActionResult<IEnumerable<Order>>> GetAllOrdersForAdmin(
             [FromQuery] DateTime? startDate,
             [FromQuery] DateTime? endDate,
@@ -132,6 +137,7 @@ namespace API.Controllers
 
         // POST: api/order/status/5
         [HttpPost("status/update/{orderId}")]
+        [Authorize(Roles = "admin, dealer")]
         public async Task<IActionResult> UpdateOrderStatus(int orderId, [FromBody] OrderStatus newStatus)
         {
             var order = await _context.Orders.FindAsync(orderId);
@@ -145,6 +151,7 @@ namespace API.Controllers
         }
 
         [HttpPost("delete/{orderId}")]
+        [Authorize(Roles = "admin, dealer")]
         public async Task<IActionResult> DeleteOrder(int orderId)
         {
             var order = await _context.Orders.FindAsync(orderId);

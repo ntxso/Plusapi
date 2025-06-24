@@ -1,5 +1,6 @@
 ﻿using API.Context;
 using API.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -20,12 +21,14 @@ namespace API.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "admin")]
         public async Task<ActionResult<IEnumerable<Customer>>> GetCustomers()
         {
             return await _context.Customers.ToListAsync();
         }
 
         [HttpGet("search")]
+        [Authorize(Roles = "admin")]
         public async Task<ActionResult<IEnumerable<Customer>>> Search([FromQuery] string? name, [FromQuery] string? companyName)
         {
             var query = _context.Customers.AsQueryable();
@@ -38,6 +41,7 @@ namespace API.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize(Roles = "admin, dealer")]
         public async Task<ActionResult<Customer>> GetCustomer(int id)
         {
             var customer = await _context.Customers.FindAsync(id);
@@ -46,6 +50,7 @@ namespace API.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "admin")]
         public async Task<ActionResult<Customer>> CreateCustomer(CreateCustomerDto dto)
         {
             var customer = new Customer
@@ -64,6 +69,7 @@ namespace API.Controllers
         }
 
         [HttpPost("Update/{id}")]
+        [Authorize(Roles = "admin, dealer")]
         public async Task<IActionResult> UpdateCustomer(int id, CreateCustomerDto customerDto)
         {
             Console.WriteLine($"müşteri:{JsonConvert.SerializeObject(customerDto)}");
@@ -85,6 +91,7 @@ namespace API.Controllers
         }
 
         [HttpPost("Delete/{id}")]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> DeleteCustomer(int id)
         {
             var customer = await _context.Customers.FindAsync(id);

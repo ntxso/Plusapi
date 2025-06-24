@@ -1,5 +1,6 @@
 ﻿using API.Context;
 using API.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -66,6 +67,7 @@ namespace YourNamespace.Controllers
 
         // POST: api/products
         [HttpPost]
+        [Authorize(Roles = "admin")]
         public async Task<ActionResult<Product>> CreateProduct(CreateProductDto dto)
         {
             var user = User.Identity?.Name ?? "Anonymous";
@@ -91,6 +93,7 @@ namespace YourNamespace.Controllers
 
         // POST: api/products/bulk
         [HttpPost("bulk")]
+        [Authorize(Roles = "admin")]
         public async Task<ActionResult> CreateProducts([FromBody] List<CreateProductDto> products)
         {
             if (products == null || products.Count == 0)
@@ -117,6 +120,7 @@ namespace YourNamespace.Controllers
 
         // PUT: api/products/5
         [HttpPost("Update/{id}")]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> UpdateProduct(int id, [FromBody] Product product)
         {
             if (id != product.Id)
@@ -173,8 +177,43 @@ namespace YourNamespace.Controllers
             return NoContent();
         }
 
+
+        [HttpPost("UpdatePrice/{id}")]
+        [Authorize(Roles = "admin")]
+        public async Task<IActionResult> UpdateProductPrice(int id, [FromBody] UpdateProductPriceDto productPrice)
+        {
+           
+
+            // Mevcut ürünü ve ilişkili tag'ini veritabanından çekiyoruz
+            var existingProduct = await _context.Products
+                //.Include(p => p.Tag) // Tag'ı eager loading ile yüklüyoruz
+                .FirstOrDefaultAsync(p => p.Id == id);
+
+            if (existingProduct == null)
+                return NotFound();
+
+            // Ana ürün bilgilerini güncelle
+            existingProduct.Price = productPrice.Price;
+            _context.Entry(existingProduct).CurrentValues.SetValues(existingProduct);
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!_context.Products.Any(p => p.Id == id))
+                    return NotFound();
+                else
+                    throw;
+            }
+
+            return NoContent();
+        }
+
         // DELETE: api/products/5
         [HttpPost("Delete/{id}")]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> DeleteProduct(int id)
         {
             var product = await _context.Products
@@ -194,5 +233,10 @@ namespace YourNamespace.Controllers
             await _context.SaveChangesAsync();
             return NoContent();
         }
+    }
+
+    public class UpdateProductPriceDto
+    {
+        public decimal Price { get; set; }
     }
 }

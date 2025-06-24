@@ -1,5 +1,6 @@
 ﻿using API.Context;
 using API.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -32,6 +33,7 @@ namespace API.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "admin")]
         public async Task<ActionResult<PhoneModel>> Create(PhoneModel model)
         {
             _context.PhoneModels.Add(model);
@@ -40,6 +42,7 @@ namespace API.Controllers
         }
 
         [HttpPost("update/{id}")]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> Update(int id, PhoneModel updated)
         {
             if (id != updated.Id) return BadRequest();
@@ -61,6 +64,7 @@ namespace API.Controllers
         }
 
         [HttpPost("delete/{id}")]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> Delete(int id)
         {
             var model = await _context.PhoneModels.FindAsync(id);

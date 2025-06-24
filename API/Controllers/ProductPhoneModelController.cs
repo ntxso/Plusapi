@@ -1,5 +1,6 @@
 ﻿using API.Context;
 using API.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -36,6 +37,7 @@ namespace API.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "admin")]
         public async Task<ActionResult> Create(ProductPhoneModel model)
         {
             // İlişki zaten varsa, tekrar eklenmesin
@@ -51,6 +53,7 @@ namespace API.Controllers
         }
 
         [HttpPost("delete")]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> Delete([FromQuery] int productId, [FromQuery] int phoneModelId)
         {
             var relation = await _context.ProductPhoneModels
@@ -64,6 +67,7 @@ namespace API.Controllers
         }
 
         [HttpPost("remove")]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> Remove([FromBody] ProductPhoneModel model)
         {
             var relation = await _context.ProductPhoneModels

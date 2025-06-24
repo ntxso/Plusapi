@@ -1,4 +1,5 @@
 ﻿using API.Context;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,6 +17,7 @@ public class TablesController : ControllerBase
 
     // 1. Tüm tablo isimlerini getir
     [HttpGet("tables")]
+    [Authorize(Roles = "admin")]
     public IActionResult GetTableNames()
     {
         try
@@ -35,6 +37,7 @@ public class TablesController : ControllerBase
 
     // 2. Tablo verilerini sayfalama ile getir
     [HttpGet("{tableName}/data")]
+    [Authorize(Roles = "admin")]
     public async Task<IActionResult> GetTableData(
     string tableName,
     [FromQuery] int page = 1,
@@ -62,6 +65,20 @@ public class TablesController : ControllerBase
             case "orders":
                 var orders = await _context.Orders.FromSqlRaw(query).ToListAsync();
                 return Ok(orders);
+                case "orderitems":
+                    return Ok(await _context.OrderItems.FromSqlRaw(query).ToListAsync());
+                case "cartitems":
+                    return Ok(await _context.CartItems.FromSqlRaw(query).ToListAsync());
+                case "carts":
+                    return Ok(await _context.Carts.FromSqlRaw(query).ToListAsync());
+                case "colors":
+                    return Ok(await _context.Colors.FromSqlRaw(query).ToListAsync());
+                case "productcolors":
+                    return Ok(await _context.ProductColors.FromSqlRaw(query).ToListAsync());
+                case "phonemodels":
+                    return Ok(await _context.PhoneModels.ToListAsync());
+                case "tags":
+                    return Ok(await _context.Tags.FromSqlRaw(query).ToListAsync());
 
             default:
                 return NotFound("Table not found");

@@ -3,6 +3,7 @@ using API.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers
 {
@@ -78,6 +79,38 @@ namespace API.Controllers
                 return StatusCode(500, $"Silme hatası: {ex.Message}");
             }
         }
+
+        [HttpGet("all")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetAllImages([FromQuery] int page = 1, [FromQuery] int pageSize = 30, [FromQuery] int? categoryId = null)
+        {
+            var query = _context.ProductImages
+                .Include(p => p.Product)
+                .ThenInclude(p => p.Category)
+                .AsQueryable();
+
+            if (categoryId.HasValue)
+            {
+                query = query.Where(p => p.Product != null && p.Product.CategoryId == categoryId.Value);
+            }
+
+            var totalCount = await query.CountAsync();
+
+            var images = await query
+                .OrderByDescending(p => p.Id)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return Ok(new
+            {
+                data = images,
+                total = totalCount,
+                page,
+                pageSize
+            });
+        }
+
 
     }
 

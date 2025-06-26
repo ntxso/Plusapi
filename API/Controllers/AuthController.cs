@@ -1,6 +1,6 @@
 ﻿using API.Context;
 using API.Models;
-using API.Security;
+//using API.Security;
 using API.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -27,6 +27,29 @@ public class AuthController : ControllerBase
         _userService = userService;
     }
 
+    //[HttpPost("login")]
+    //public async Task<IActionResult> Login([FromBody] LoginRequest request)
+    //{
+    //    var user = await _context.Users
+    //        .Include(u => u.Customer)
+    //        .FirstOrDefaultAsync(u => u.Email == request.Email);
+
+    //    if (user == null || !VerifyPassword(request.Password, user.PasswordHash))
+    //        return Unauthorized("Kullanıcı adı veya şifre hatalı.");
+
+    //    var token = _tokenService.CreateToken(user);
+
+    //    //var user = User.Identity?.Name ?? "Anonymous";
+    //    Log.Information($"Kullanıcı giriş yaptı: {user.Email}", "testUser");
+    //    return Ok(new LoginResponse
+    //    {
+    //        Token = token,
+    //        Role = user.Role,
+    //        Email = user.Email,
+    //        Name= user.Customer?.Name // Bayi adı varsa döndür
+    //    });
+    //}
+    //refresh token eklendi süresi buradan ayarlanıyor
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginRequest request)
     {
@@ -37,16 +60,41 @@ public class AuthController : ControllerBase
         if (user == null || !VerifyPassword(request.Password, user.PasswordHash))
             return Unauthorized("Kullanıcı adı veya şifre hatalı.");
 
-        var token = _tokenService.CreateToken(user);
+        var accessToken = _tokenService.CreateToken(user);
+        var refreshToken = _tokenService.GenerateRefreshToken();
 
-        //var user = User.Identity?.Name ?? "Anonymous";
-        Log.Information($"Kullanıcı giriş yaptı: {user.Email}", "testUser");
+        // Eski refresh token'ları sil (isteğe bağlı)
+        var existingTokens = await _context.RefreshTokens
+            .Where(t => t.UserId == user.Id && !t.IsRevoked)
+            .ToListAsync();
+
+        foreach (var token in existingTokens)
+        {
+            token.IsRevoked = true;
+            token.RevokedAt = DateTime.UtcNow;
+        }
+
+        var newRefreshToken = new RefreshToken
+        {
+            Token = refreshToken,
+            UserId = user.Id,
+            CreatedAt = DateTime.UtcNow,
+            Expires = DateTime.UtcNow.AddDays(30),
+            IsRevoked = false
+        };
+
+        _context.RefreshTokens.Add(newRefreshToken);
+        await _context.SaveChangesAsync();
+
+        Log.Information($"Kullanıcı giriş yaptı: {user.Email}");
+
         return Ok(new LoginResponse
         {
-            Token = token,
+            Token = accessToken,
+            RefreshToken = refreshToken,
             Role = user.Role,
             Email = user.Email,
-            Name= user.Customer?.Name // Bayi adı varsa döndür
+            Name = user.Customer?.Name
         });
     }
 
@@ -101,6 +149,44 @@ public class AuthController : ControllerBase
             userId = user.Id
         });
     }
+
+    [HttpPost("refresh")]
+    public async Task<IActionResult> Refresh(TokenRefreshRequest request)
+    {
+        var storedToken = await _context.RefreshTokens
+            .FirstOrDefaultAsync(x => x.Token == request.RefreshToken && !x.IsRevoked);
+
+        if (storedToken == null || storedToken.Expires < DateTime.UtcNow)
+            return Unauthorized("Refresh token is invalid or expired");
+
+        var user = await _context.Users.FindAsync(storedToken.UserId);
+        if (user == null) return Unauthorized();
+
+        var newAccessToken = _tokenService.CreateToken(user);
+        var newRefreshToken = _tokenService.GenerateRefreshToken(); // yeni token üret
+
+        // Eski refresh token’ı iptal et
+        storedToken.IsRevoked = true;
+        storedToken.RevokedAt = DateTime.UtcNow;
+
+        // Yeni refresh token DB’ye ekle
+        _context.RefreshTokens.Add(new RefreshToken
+        {
+            Token = newRefreshToken,
+            UserId = user.Id,
+            CreatedAt = DateTime.UtcNow,
+            Expires = DateTime.UtcNow.AddDays(30)
+        });
+
+        await _context.SaveChangesAsync();
+
+        return Ok(new
+        {
+            accessToken = newAccessToken,
+            refreshToken = newRefreshToken
+        });
+    }
+
 
 
 }

@@ -44,6 +44,8 @@ namespace API.Controllers
                     UnitPrice = i.Product?.Price ?? 0 // NULL kontrolü yapılabilir
                 }).ToList()
             };
+            if (string.IsNullOrWhiteSpace(dto.Note))
+                order.Note = dto.Note;
             // Toplam sipariş tutarını hesapla
             order.TotalAmount = order.Items.Sum(item => item.TotalPrice);
 

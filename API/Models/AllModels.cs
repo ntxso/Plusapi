@@ -152,6 +152,7 @@ namespace API.Models
         public Customer? Customer { get; set; }
 
         public DateTime? OrderDate { get; set; } = DateTime.UtcNow;
+        public string Note { get; set; }
 
         public ICollection<OrderItem>? Items { get; set; }
 

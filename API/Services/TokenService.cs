@@ -1,5 +1,7 @@
 ﻿using API.Models;
+using API.Security;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -10,11 +12,11 @@ namespace API.Services;
 
 public class TokenService
 {
-    private readonly IConfiguration _config;
+    private readonly JwtSettings _jwtSettings;
 
-    public TokenService(IConfiguration config)
+    public TokenService(IOptions<JwtSettings> jwtSettings)
     {
-        _config = config;
+        _jwtSettings = jwtSettings.Value;
     }
 
     public string CreateToken(User user)
@@ -29,18 +31,26 @@ public class TokenService
 
         };
 
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Key));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
         var token = new JwtSecurityToken(
-            issuer: _config["Jwt:Issuer"],
-            audience: _config["Jwt:Audience"],
+            issuer: _jwtSettings.Issuer,
+            audience: _jwtSettings.Audience,
             claims: claims,
-            expires: DateTime.UtcNow.AddHours(3),
+            expires: DateTime.UtcNow.AddHours(_jwtSettings.ExpireHours),
             signingCredentials: creds
         );
 
         return new JwtSecurityTokenHandler().WriteToken(token);
+    }
+
+    public string GenerateRefreshToken()
+    {
+        var randomNumber = new byte[64];
+        using var rng = RandomNumberGenerator.Create();
+        rng.GetBytes(randomNumber);
+        return Convert.ToBase64String(randomNumber);
     }
 
     //public async Task<(string Token, string RefreshToken)> CreateTokenAsync(User user)

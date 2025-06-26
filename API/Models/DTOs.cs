@@ -2,9 +2,15 @@
 
 namespace API.Models
 {
+    public class TokenRefreshRequest
+    {
+        public string RefreshToken { get; set; } = string.Empty;
+    }
+
     public class CreateOrderDto
     {
         public int CustomerId { get; set; }
+        public string Note { get; set; }
     }
 
     public class CartItemDto
@@ -48,9 +54,11 @@ namespace API.Models
 
     public class LoginResponse
     {
-        public string Token { get; set; }
-        public string Role { get; set; }
-        public string Email { get; set; }
-        public string Name { get; set; }
+        public string Token { get; set; } = null!;
+        public string RefreshToken { get; set; } = null!;
+        public string Role { get; set; } = null!;
+        public string Email { get; set; } = null!;
+        public string? Name { get; set; }
     }
+
 }

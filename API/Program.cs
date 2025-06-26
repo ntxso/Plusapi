@@ -1,9 +1,11 @@
 using API.Context;
 using API.Models;
+using API.Security;
 using API.Services;
 using DotNetEnv;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
 using Serilog.Events;
@@ -34,7 +36,7 @@ static ColumnOptions GetSqlColumnOptions()
 var builder = WebApplication.CreateBuilder(args);
 
 
-var isDevelopment = builder.Environment.IsDevelopment();
+
 //var connectionString = isDevelopment
 //    ? Environment.GetEnvironmentVariable("CONNECTION_STRING_DEVELOPMENT")
 //    : Environment.GetEnvironmentVariable("CONNECTION_STRING_PRODUCTION");
@@ -48,6 +50,7 @@ builder.Configuration
     .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true)
     .AddEnvironmentVariables(); // Çift alt tireyi ':' olarak çözümler
 
+var isDevelopment = builder.Environment.IsDevelopment();
 
 try
 {
@@ -62,22 +65,17 @@ try
             options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
         });
 
+
     builder.Services.AddScoped<TokenService>();
     builder.Services.AddScoped<UserService>();
 
     builder.Services.Configure<EmailSettings>(config.GetSection("EmailSettings"));
+    builder.Services.Configure<JwtSettings>(config.GetSection("JWT"));
+
     // EmailService'i Dependency Injection container'a kaydediyoruz.
     // AddTransient: Her enjekte edildiðinde veya istendiðinde yeni bir EmailService örneði oluþturulur.
     builder.Services.AddTransient<EmailService>();
 
-    if (isDevelopment)
-    {
-        Console.WriteLine("----- " + config.GetConnectionString("Development"));
-    }
-    else
-    {
-        Console.WriteLine("----- " + config.GetConnectionString("Production"));
-    }
     // DbContext
     var _conString = isDevelopment
         ? config.GetConnectionString("Development")
@@ -129,7 +127,22 @@ try
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
 
-    // JWT Authentication
+    // JWT Authentication eski
+    //builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    //    .AddJwtBearer(options =>
+    //    {
+    //        options.TokenValidationParameters = new TokenValidationParameters
+    //        {
+    //            ValidateIssuer = true,
+    //            ValidateAudience = true,
+    //            ValidateIssuerSigningKey = true,
+    //            ValidIssuer = config["JWT_ISSUER"],
+    //            ValidAudience = config["JWT_AUDIENCE"],
+    //            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["JWT_KEY"]))
+    //        };
+    //    });
+
+    var jwtSettings = builder.Configuration.GetSection("Jwt").Get<JwtSettings>();
     builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         .AddJwtBearer(options =>
         {
@@ -138,11 +151,19 @@ try
                 ValidateIssuer = true,
                 ValidateAudience = true,
                 ValidateIssuerSigningKey = true,
-                ValidIssuer = config["JWT_ISSUER"],
-                ValidAudience = config["JWT_AUDIENCE"],
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["JWT_KEY"]))
+                ValidIssuer = jwtSettings.Issuer,
+                ValidAudience = jwtSettings.Audience,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Key))
             };
         });
+
+   
+
+
+
+
+
+
 
     builder.Services.AddAuthorization();
     Console.WriteLine($"Environment: {builder.Environment.EnvironmentName}");
@@ -150,9 +171,9 @@ try
 
 
 
-    Console.WriteLine("==== ENVIRONMENT CONFIG DEBUG ====");
-    Console.WriteLine($"ASPNETCORE_ENVIRONMENT: {config["ASPNETCORE_ENVIRONMENT"]}");
-    Console.WriteLine($"ConnectionStrings:DefaultConnection: {config.GetConnectionString("DefaultConnection")}");
+    //Console.WriteLine("==== ENVIRONMENT CONFIG DEBUG ====");
+    //Console.WriteLine($"ASPNETCORE_ENVIRONMENT: {config["ASPNETCORE_ENVIRONMENT"]}");
+    //Console.WriteLine($"ConnectionStrings:DefaultConnection: {config.GetConnectionString("DefaultConnection")}");
 
 
     // Veritabaný migration

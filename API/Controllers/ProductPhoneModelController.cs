@@ -22,8 +22,8 @@ namespace API.Controllers
         public async Task<ActionResult<IEnumerable<ProductPhoneModel>>> GetAll()
         {
             return await _context.ProductPhoneModels
-                .Include(p => p.Product)
-                .Include(p => p.PhoneModel)
+                //burası sıkıntılı iç içe sonsuz döngülü.Include(p => p.Product)
+                //.Include(p => p.PhoneModel)
                 .ToListAsync();
         }
         [HttpGet("product/{productId}")]
@@ -32,6 +32,16 @@ namespace API.Controllers
             var models = await _context.ProductPhoneModels
                 .Where(x => x.ProductId == productId)
                 .Include(p => p.PhoneModel)
+                .ToListAsync();
+            return Ok(models ?? new List<ProductPhoneModel>());
+        }
+
+        [HttpGet("productsbymodelid/{modelId}")]
+        public async Task<ActionResult<IEnumerable<ProductPhoneModel>>> GetByPhoneModelId(int modelId)
+        {
+            var models = await _context.ProductPhoneModels
+                .Where(x => x.PhoneModelId == modelId)
+                //.Include(p => p.PhoneModel)
                 .ToListAsync();
             return Ok(models ?? new List<ProductPhoneModel>());
         }

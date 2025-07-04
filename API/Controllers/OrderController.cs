@@ -12,10 +12,12 @@ namespace API.Controllers
     public class OrderController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly ILogger<OrderController> _logger;
 
-        public OrderController(AppDbContext context)
+        public OrderController(AppDbContext context, ILogger<OrderController> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
         // POST: api/order
@@ -52,7 +54,7 @@ namespace API.Controllers
             _context.Orders.Add(order);
             _context.CartItems.RemoveRange(cart.Items); // Sepeti temizle
             await _context.SaveChangesAsync();
-
+            _logger.LogWarning("Yeni sipariş oluşturuldu: SipNo:{OrderId} - Müşt.No:{CustomerId}", order.Id, dto.CustomerId);
             return Ok(order);
         }
 
@@ -63,12 +65,13 @@ namespace API.Controllers
         {
             return await _context.Orders
                 .Where(o => o.CustomerId == customerId)
-                .Include(o => o.Items)
+                .Include(o => o.Items!)
                     .ThenInclude(i => i.Product)
-                .Include(o => o.Items)
+                .Include(o => o.Items!)
                     .ThenInclude(i => i.Color)
-                .Include(o => o.Items)
+                .Include(o => o.Items!)
                     .ThenInclude(i => i.PhoneModel)
+                    .OrderByDescending(o => o.OrderDate)
                 .ToListAsync();
         }
 

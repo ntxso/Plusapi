@@ -70,7 +70,7 @@ namespace YourNamespace.Controllers
         [Authorize(Roles = "admin")]
         public async Task<ActionResult<Product>> CreateProduct(CreateProductDto dto)
         {
-            var user = User.Identity?.Name ?? "Anonymous";
+            //var user = User.Identity?.Name ?? "Anonymous";
             //_logger.LogInformation($"User {user} is requesting product with ID {user}");
             //_logger.LogInformation("Kullanıcı {user} sepete ürün ekledi: {@Product}", user, dto);
             _logger.LogWarning("otomatik kullanıcı bilgisi gelecek mi ürün eklendi");

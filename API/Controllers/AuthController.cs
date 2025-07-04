@@ -19,12 +19,14 @@ public class AuthController : ControllerBase
     private readonly AppDbContext _context;
     private readonly TokenService _tokenService;
     private readonly UserService _userService;
+    private readonly ILogger<AuthController> _logger;
 
-    public AuthController(AppDbContext context, TokenService tokenService, UserService userService)
+    public AuthController(AppDbContext context, TokenService tokenService, UserService userService, ILogger<AuthController> logger)
     {
         _context = context;
         _tokenService = tokenService;
         _userService = userService;
+        _logger = logger;
     }
 
     //[HttpPost("login")]
@@ -141,7 +143,7 @@ public class AuthController : ControllerBase
            customerId: customer.Id
        );
 
-
+        _logger.LogWarning("Yeni bayi ve kullanıcı kaydedildi: {CustomerName}, {UserEmail}", customer.Name, user.Email);
         return Ok(new
         {
             message = "Bayi ve kullanıcı başarıyla kaydedildi.",

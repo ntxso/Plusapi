@@ -24,5 +24,27 @@ namespace API.Controllers
             if (user == null) return NotFound();
             return user;
         }
+
+        [HttpGet]
+        [Authorize(Roles = "admin")] // Sadece admin yetkisi olanlar
+        public async Task<ActionResult<IEnumerable<User>>> GetAllUsers()
+        {
+            var users = await _userService.GetAllUsersAsync();
+            return Ok(users);
+        }
+
+        [HttpGet("by-customer/{customerId}")]
+        [Authorize(Roles = "admin, dealer")] // Hem admin hem dealer erişebilir
+        public async Task<ActionResult<IEnumerable<User>>> GetUsersByCustomerId(int customerId)
+        {
+            var users = await _userService.GetUsersByCustomerIdAsync(customerId);
+
+            if (users == null || !users.Any())
+            {
+                return NotFound("Belirtilen CustomerId'ye ait kullanıcı bulunamadı");
+            }
+
+            return Ok(users);
+        }
     }
 }

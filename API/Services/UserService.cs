@@ -48,6 +48,16 @@ namespace API.Services
            .FirstOrDefaultAsync(u => u.Id == id);
 
         }
+        public async Task<IEnumerable<User>> GetAllUsersAsync()
+        {
+            return await _context.Users.ToListAsync();
+        }
+        public async Task<IEnumerable<User>> GetUsersByCustomerIdAsync(int customerId)
+        {
+            return await _context.Users
+                                .Where(u => u.CustomerId == customerId)
+                                .ToListAsync();
+        }
     }
 
 }

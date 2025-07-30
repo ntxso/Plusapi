@@ -75,6 +75,7 @@ try
     // EmailService'i Dependency Injection container'a kaydediyoruz.
     // AddTransient: Her enjekte edildiðinde veya istendiðinde yeni bir EmailService örneði oluþturulur.
     builder.Services.AddTransient<EmailService>();
+    builder.Services.AddTransient<StockService>();
 
     // DbContext
     var _conString = isDevelopment

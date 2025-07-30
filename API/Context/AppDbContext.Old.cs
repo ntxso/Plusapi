@@ -47,10 +47,10 @@ namespace API.Context
                 .WithOne(p => p.Tag)
                 .HasForeignKey<Tag>(t => t.ProductId);
 
-            modelBuilder.Entity<Stock>()
-                .HasOne(s => s.Product)
-                .WithOne(p => p.Stock)
-                .HasForeignKey<Stock>(s => s.ProductId);
+            //modelBuilder.Entity<Stock>()
+            //    .HasOne(s => s.Product)
+            //    .WithOne(p => p.Stock)
+            //    .HasForeignKey<Stock>(s => s.ProductId);
 
             modelBuilder.Entity<ProductImage>()
                 .HasOne(i => i.Product)

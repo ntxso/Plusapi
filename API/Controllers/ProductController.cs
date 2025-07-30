@@ -26,7 +26,7 @@ namespace YourNamespace.Controllers
         {
             return await _context.Products
                 .Include(p => p.Category)
-                .Include(p => p.Stock)
+                .Include(p => p.Stocks)
                 .Include(p => p.Tag)
                 .Include(p => p.Images)
                 .ToListAsync();
@@ -38,7 +38,7 @@ namespace YourNamespace.Controllers
         {
             var product = await _context.Products
                 .Include(p => p.Category)
-                .Include(p => p.Stock)
+                .Include(p => p.Stocks)
                 .Include(p => p.Tag)
                 .Include(p => p.Images)
                 .FirstOrDefaultAsync(p => p.Id == id);
@@ -221,7 +221,7 @@ namespace YourNamespace.Controllers
         public async Task<IActionResult> DeleteProduct(int id)
         {
             var product = await _context.Products
-                .Include(p => p.Stock)
+                .Include(p => p.Stocks)
                 .Include(p => p.Tag)
                 .Include(p => p.Images)
                 .FirstOrDefaultAsync(p => p.Id == id);
@@ -229,7 +229,7 @@ namespace YourNamespace.Controllers
             if (product == null)
                 return NotFound();
 
-            if (product.Stock != null) _context.Stocks.Remove(product.Stock);
+            if (product.Stocks != null) _context.Stocks.RemoveRange(product.Stocks);
             if (product.Tag != null) _context.Tags.Remove(product.Tag);
             _context.ProductImages.RemoveRange(product.Images?.Any() == true ? product.Images : Enumerable.Empty<ProductImage>());
             _context.Products.Remove(product);

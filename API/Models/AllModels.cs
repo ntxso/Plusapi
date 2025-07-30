@@ -37,8 +37,9 @@ namespace API.Models
         public int? Publish { get; set; }
         public Category? Category { get; set; }
 
-        public Stock? Stock { get; set; }
+        //public Stock? Stock { get; set; }
         public Tag? Tag { get; set; }
+        public ICollection<Stock>? Stocks { get; set; }
         public ICollection<ProductImage>? Images { get; set; }
         public ICollection<CustomerProductPrice>? SpecialPrices { get; set; }
         public ICollection<ProductPhoneModel>? CompatiblePhoneModels { get; set; }
@@ -68,15 +69,34 @@ namespace API.Models
         public PhoneModel? PhoneModel { get; set; }
     }
 
+    //public class Stock
+    //{
+    //    public int Id { get; set; }
+
+    //    public int ProductId { get; set; }
+
+    //    public Product? Product { get; set; }
+
+    //    public int Quantity { get; set; }
+    //}
     public class Stock
     {
         public int Id { get; set; }
-
         public int ProductId { get; set; }
+        public Product Product { get; set; }
 
-        public Product? Product { get; set; }
+        // Varyasyon bilgileri (nullable çünkü bazı ürünlerde varyasyon olmayabilir)
+        public int? PhoneModelId { get; set; }
+        public PhoneModel? PhoneModel { get; set; }
+
+        public int? ColorId { get; set; }
+        public Color? Color { get; set; }
 
         public int Quantity { get; set; }
+
+        // Stok giriş/çıkış tarihi gibi ek bilgiler
+        public DateTime LastUpdated { get; set; } = DateTime.UtcNow;
+
     }
 
     public class Tag

@@ -100,10 +100,42 @@ namespace API.Context
                 .HasForeignKey(pp => pp.PhoneModelId);
 
             // Product - Stock (1-1)
-            modelBuilder.Entity<Product>()
-                .HasOne(p => p.Stock)
-                .WithOne(s => s.Product)
-                .HasForeignKey<Stock>(s => s.ProductId);
+            //modelBuilder.Entity<Product>()
+            //    .HasOne(p => p.Stock)
+            //    .WithOne(s => s.Product)
+            //    .HasForeignKey<Stock>(s => s.ProductId);
+
+            // Stock - Product (N-1)
+            modelBuilder.Entity<Stock>()
+                .HasOne(s => s.Product)
+                .WithMany(p => p.Stocks) // Product sınıfında ICollection<Stock> Stocks eklemelisiniz
+                .HasForeignKey(s => s.ProductId);
+
+            // Stock - PhoneModel (N-1, optional)
+            modelBuilder.Entity<Stock>()
+                .HasOne(s => s.PhoneModel)
+                .WithMany()
+                .HasForeignKey(s => s.PhoneModelId)
+                .OnDelete(DeleteBehavior.Restrict); // Varyasyon silinirse stok kaydı silinmesin
+
+            // Stock - Color (N-1, optional)
+            modelBuilder.Entity<Stock>()
+                .HasOne(s => s.Color)
+                .WithMany()
+                .HasForeignKey(s => s.ColorId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Composite index (isteğe bağlı)
+            modelBuilder.Entity<Stock>()
+                .HasIndex(s => new { s.ProductId, s.PhoneModelId, s.ColorId })
+                .IsUnique(false); // Aynı kombinasyonla birden fazla stok girişi olabilir
+
+            modelBuilder.Entity<Stock>()
+    .Property(s => s.LastUpdated)
+    .HasDefaultValueSql("GETUTCDATE()");
+
+
+
 
             // Product - Tag (1-1)
             modelBuilder.Entity<Product>()

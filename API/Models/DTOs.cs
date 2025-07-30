@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace API.Models
 {
@@ -60,5 +61,17 @@ namespace API.Models
         public string Email { get; set; } = null!;
         public string? Name { get; set; }
     }
+    public class StockDto
+    {
+        public int Id { get; set; }
+        public int Quantity { get; set; }
+        public string? ColorName { get; set; }
+        public string? PhoneModelName { get; set; }
+    }
 
+    public class UpdateStockQuantityDto
+    {
+        [Range(0, int.MaxValue, ErrorMessage = "Stok miktarı negatif olamaz.")]
+        public int Quantity { get; set; }
+    }
 }

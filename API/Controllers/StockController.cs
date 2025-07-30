@@ -23,7 +23,7 @@ namespace API.Controllers
         }
 
         [HttpPost("sync-stocks/{productId}")]
-        [Authorize(Roles = "admin,editor")]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> SyncStocksWithProduct(int productId)
         {
             try
@@ -203,7 +203,7 @@ namespace API.Controllers
         }
         //Dto olmayan entity modeli döndürür
         [HttpGet("by-product2/{productId}")]
-        [Authorize(Roles = "admin,editor")]
+        [Authorize(Roles = "admin,dealer")]
         public async Task<IActionResult> GetStocksByProductId2(int productId)
         {
             try
@@ -224,7 +224,7 @@ namespace API.Controllers
         }
 
         [HttpPost("{stockId}")]
-        [Authorize(Roles = "admin,editor")]
+        [Authorize(Roles = "admin,dealer")]
         public async Task<IActionResult> UpdateStockQuantity(int stockId, [FromBody] UpdateStockQuantityDto updateDto)
         {
             try

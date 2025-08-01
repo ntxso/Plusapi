@@ -47,9 +47,11 @@ namespace API.Controllers
                 }).ToList()
             };
             if (string.IsNullOrWhiteSpace(dto.Note))
+                order.Note = $"Sipariş {DateTime.Now:dd.MM.yyyy HH:mm:ss} tarihinde oluşturuldu.";
+            else
                 order.Note = dto.Note;
-            // Toplam sipariş tutarını hesapla
-            order.TotalAmount = order.Items.Sum(item => item.TotalPrice);
+                // Toplam sipariş tutarını hesapla
+                order.TotalAmount = order.Items.Sum(item => item.TotalPrice);
 
             _context.Orders.Add(order);
             _context.CartItems.RemoveRange(cart.Items); // Sepeti temizle

@@ -145,7 +145,8 @@ namespace API.Services
                     Id = s.Id,
                     Quantity = s.Quantity,
                     ColorName = s.Color != null ? s.Color.Name : null,
-                    PhoneModelName = s.PhoneModel != null ? $"{s.PhoneModel.Brand} {s.PhoneModel.Model}" : null
+                    PhoneBrandName = s.PhoneModel != null ? s.PhoneModel.Brand : null,
+                    PhoneModelName = s.PhoneModel != null ? s.PhoneModel.Model : null
                 })
                 .ToListAsync();
         }

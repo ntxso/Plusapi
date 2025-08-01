@@ -66,6 +66,7 @@ namespace API.Models
         public int Id { get; set; }
         public int Quantity { get; set; }
         public string? ColorName { get; set; }
+        public string PhoneBrandName { get; set; }
         public string? PhoneModelName { get; set; }
     }
 
